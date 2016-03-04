@@ -1,0 +1,16 @@
+.hg/last-message.txt
+.hg/cache/tags
+.hg/dirstate
+.hgignore
+.hg/00changelog.i
+.hg/cache/branchheads-served
+.hg/requires
+*.i
+.hg/store/fncache
+.hg/store/phaseroots
+.hg/store/undo.phaseroots
+*.bookmarks
+.hg/undo.branch
+*.desc
+.hg/undo.dirstate
+.hg/store/undo
