@@ -1,7 +1,14 @@
 from flask import Flask, render_template
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from database_schema import Base, Category, Product
 
 app = Flask(__name__)
 
+engine = create_engine('sqlite:///itemcatalog.db')
+Base.metadata.bind = engine
+DBSession = sessionmaker(bind=engine)
+session = DBSession()
 
 # TODO
 # Fake categories to test navigation; delete from live version.
