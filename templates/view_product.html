@@ -8,8 +8,8 @@
 <p>Description:!description!</p>
 <p>Price:!price!</p>
 <p>Category:!category!</p>
-<a href="{{url_for('editProduct', category_id = product.category_id, product_id = product.id)}}">Edit</a>
-<a href="{{url_for('deleteProduct', category_id = product.category_id, product_id = product.id)}}">Delete</a>
+<a href="{{url_for('editProduct', category_id = singleproduct.category_id, product_id = singleproduct.id)}}">Edit</a>
+<a href="{{url_for('deleteProduct', category_id = singleproduct.category_id, product_id = singleproduct.id)}}">Delete</a>
 <a class="cancelButton" href="/catalog/0">Cancel</a>
 
 {% endblock %}

@@ -11,31 +11,6 @@ DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
 
-# TODO
-# Fake products to test navigation; delete from live version.
-product = {'name': 'Shoes',
-           'description': 'Running shoes.',
-           'price': '$115.99',
-           'category_id': '1',
-           'id': '1'}
-
-products = [{'name': 'Shoes',
-             'description': 'Running shoes.',
-             'price': '$115.99',
-             'category_id': '1',
-             'id': '1'},
-            {'name': 'Suit',
-             'description': 'Swim suit.',
-             'price': '$34.99',
-             'category_id': '2',
-             'id': '2'},
-            {'name': 'Sunglasses',
-             'description': 'Black sunglasses.',
-             'price': '$15.99',
-             'category_id': '3',
-             'id': '3'}]
-
-
 def GetAllCategories():
     """ Get a list of all categories in the catalog.
 
@@ -46,12 +21,48 @@ def GetAllCategories():
     return categories
 
 
+def GetAllProducts(category_id):
+    """ Get a list of all products in a category.
+
+    Args:
+        category_id: the ID of the category to get the products for.
+    Returns:
+        products: a list of Product tuples of all products in a category.
+    """
+    products = session.query(Product).\
+        filter_by(category_id=category_id).\
+        order_by(Product.name)
+    return products
+
+
+def GetLatestProducts():
+    """ Get a list of the last 5 products that were added.
+
+    Returns:
+        products: a list of Product tuples of the last 5 products added.
+    """
+    products = session.query(Product).order_by(Product.id.desc()).limit(5)
+    return products
+
+
+def GetSingleProduct(product_id):
+    """ Get a single product.
+
+    Args:
+        product_id: the ID of the product to get.
+    Returns:
+        singleProduct: a Product object.
+    """
+    singleProduct = session.query(Product).filter_by(id=product_id).one()
+    return singleProduct
+
+
 @app.route('/')
 @app.route('/catalog/')
 def categoryListing():
     return render_template('list_all_categories.html',
                            categories=GetAllCategories(),
-                           products=products)
+                           products=GetLatestProducts())
 
 
 @app.route('/catalog/<int:category_id>/add/')
@@ -76,14 +87,14 @@ def deleteCategory(category_id):
 def productListing(category_id):
     return render_template('list_all_products.html',
                            categories=GetAllCategories(),
-                           products=products)
+                           products=GetAllProducts(category_id))
 
 
 @app.route('/catalog/<int:category_id>/<int:product_id>/view/')
 def viewProduct(category_id, product_id):
     return render_template('view_product.html',
                            categories=GetAllCategories(),
-                           product=product)
+                           singleproduct=GetSingleProduct(product_id))
 
 
 @app.route('/catalog/<int:category_id>/<int:product_id>/add/')
