@@ -98,10 +98,19 @@ def editCategory(category_id):
                                editedCategory=editedCategory)
 
 
-@app.route('/catalog/<int:category_id>/delete/')
+@app.route('/catalog/<int:category_id>/delete/',
+           methods=['GET', 'POST'])
 def deleteCategory(category_id):
-    return render_template('delete_category.html',
-                           categories=GetAllCategories())
+    deletedCategory = session.query(Category).filter_by(id=category_id).one()
+
+    if request.method == 'POST':
+        session.delete(deletedCategory)
+        session.commit()
+        return redirect(url_for('categoryListing'))
+    else:
+        return render_template('delete_category.html',
+                               categories=GetAllCategories(),
+                               deletedCategory=deletedCategory)
 
 
 @app.route('/catalog/<int:category_id>/')
