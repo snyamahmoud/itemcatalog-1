@@ -115,8 +115,10 @@ def deleteCategory(category_id):
 
 @app.route('/catalog/<int:category_id>/')
 def productListing(category_id):
+    listCategory = session.query(Category).filter_by(id=category_id).one()
     return render_template('list_all_products.html',
                            categories=GetAllCategories(),
+                           listCategory=listCategory,
                            products=GetAllProducts(category_id))
 
 
