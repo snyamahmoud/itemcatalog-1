@@ -16,3 +16,4 @@
 .hg/store/undo
 .hg/cur-message.txt
 itemcatalog.db
+database_schema.pyc
