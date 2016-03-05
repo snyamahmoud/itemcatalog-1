@@ -2,14 +2,13 @@
 
 {% block content %}
 
-<h2>View Product</h2>
+<h2>{{singleproduct.name}}</h2>
 
-<p>Name:!name!</p>
-<p>Description:!description!</p>
-<p>Price:!price!</p>
-<p>Category:!category!</p>
+<p>Description:{{singleproduct.description}}</p>
+<p>Price:{{singleproduct.price}}</p>
+<p>Category:{{singleproduct.category.name}}</p>
 <a href="{{url_for('editProduct', category_id = singleproduct.category_id, product_id = singleproduct.id)}}">Edit</a>
 <a href="{{url_for('deleteProduct', category_id = singleproduct.category_id, product_id = singleproduct.id)}}">Delete</a>
-<a class="cancelButton" href="/catalog/0">Cancel</a>
+<a class="cancelButton" href="/catalog/{{singleproduct.category_id}}">Cancel</a>
 
 {% endblock %}
