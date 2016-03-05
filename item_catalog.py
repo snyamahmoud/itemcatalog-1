@@ -80,10 +80,22 @@ def addCategory():
                                categories=GetAllCategories())
 
 
-@app.route('/catalog/<int:category_id>/edit/')
+@app.route('/catalog/<int:category_id>/edit/',
+           methods=['GET', 'POST'])
 def editCategory(category_id):
-    return render_template('edit_category.html',
-                           categories=GetAllCategories())
+    editedCategory = session.query(Category).filter_by(id=category_id).one()
+
+    if request.method == 'POST':
+        if request.form['name']:
+            editedCategory.name = request.form['name']
+        session.add(editedCategory)
+        session.commit()
+        return redirect(url_for('productListing',
+                                category_id=editedCategory.id))
+    else:
+        return render_template('edit_category.html',
+                               categories=GetAllCategories(),
+                               editedCategory=editedCategory)
 
 
 @app.route('/catalog/<int:category_id>/delete/')
