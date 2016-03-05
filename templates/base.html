@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+
+<html lang="en">
+	<head>
+	    <meta charset="utf-8">
+
+	    <!-- Enable Responsive Design -->
+	    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+		<title>Item Catalog</title>
+
+		<!-- Bootstrap -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+		<!-- Internal Styling -->
+		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+	</head>
+
+	<body>
+		<div class="header">
+			<h1>Item Catalog</h1>
+		</div>
+
+		<div class="container">
+			<div class="row">
+				<div class="col-xs-1 col-sm-2 col-md-3">
+					{% block sidebar %}
+					{% endblock %}
+				</div>
+				<div class="col-xs-11 col-sm-10 col-md-9">
+					{% block content %}
+					{% endblock %}
+				</div>
+			</div>
+		</div>
+
+		<div class="footer">
+			<h4>&copy; XYZ Company</h4>
+		</div>
+	</body>
+</html>

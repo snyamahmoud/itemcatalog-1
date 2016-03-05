@@ -1,0 +1,15 @@
+{% extends "sidebar_nav.html" %}
+
+{% block content %}
+
+	<h2>Latest Items</h2>
+
+	<ul>
+		{% for product in products %}
+			<li>
+				{{product.name}} ({{product.description}})
+			</li>
+		{% endfor %}
+	</ul>
+
+{% endblock %}

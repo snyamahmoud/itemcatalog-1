@@ -1,0 +1,14 @@
+{% extends "sidebar_nav.html" %}
+
+{% block content %}
+
+<h2>Edit Category</h2>
+
+<form action="{{ url_for('editCategory', category_id=0) }}" method='POST'>
+	<p>Name:</p>
+	<input type='text' size='30' name='name'>
+	<input type='submit' value='Save'>
+	<a class="cancelButton" href="/">Cancel</a>
+</form>
+
+{% endblock %}

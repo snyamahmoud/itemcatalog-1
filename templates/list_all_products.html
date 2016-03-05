@@ -1,0 +1,20 @@
+{% extends "sidebar_nav.html" %}
+
+{% block content %}
+
+	<h2>!category name!</h2>
+
+	<a href="{{url_for('addProduct', category_id = 0, product_id = 0)}}">New Product</a>
+	</br>
+
+	<ul>
+		{% for product in products %}
+			<li>
+				<a href="{{url_for('viewProduct', category_id = product.category_id, product_id = product.id)}}">{{product.name}}</a>
+				<a href="{{url_for('editProduct', category_id = product.category_id, product_id = product.id)}}">Edit</a>
+				<a href="{{url_for('deleteProduct', category_id = product.category_id, product_id = product.id)}}">Delete</a>
+			</li>
+		{% endfor %}
+	</ul>
+
+{% endblock %}

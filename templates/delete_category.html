@@ -1,0 +1,13 @@
+{% extends "sidebar_nav.html" %}
+
+{% block content %}
+
+<h2>Delete Category</h2>
+
+<form action="{{ url_for('deleteCategory', category_id=0) }}" method='POST'>
+	<p>Are you sure you want to delete !mycat! ?</p>
+	<input type='submit' value='Yes'>
+	<a class="cancelButton" href="/">Cancel</a>
+</form>
+
+{% endblock %}

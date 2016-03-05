@@ -1,0 +1,12 @@
+.header,
+.footer
+{
+	background-color: #FF9933;
+	color: #CC0000;
+	padding: 5px 25px;
+}
+
+ul
+{
+	list-style-type: none;
+}
