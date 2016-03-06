@@ -168,10 +168,21 @@ def editProduct(category_id, product_id):
                                editedProduct=editedProduct)
 
 
-@app.route('/catalog/<int:category_id>/<int:product_id>/delete/')
+@app.route('/catalog/<int:category_id>/<int:product_id>/delete/',
+           methods=['GET', 'POST'])
 def deleteProduct(category_id, product_id):
-    return render_template('delete_product.html',
-                           categories=GetAllCategories())
+    deletedProduct = GetSingleProduct(product_id)
+
+    if request.method == 'POST':
+        session.delete(deletedProduct)
+        session.commit()
+        return redirect(url_for('productListing',
+                                category_id=category_id))
+    else:
+        return render_template('delete_product.html',
+                               categories=GetAllCategories(),
+                               category_id=category_id,
+                               deletedProduct=deletedProduct)
 
 
 if __name__ == '__main__':

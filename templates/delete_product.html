@@ -4,10 +4,10 @@
 
 <h2>Delete Product</h2>
 
-<form action="{{ url_for('deleteProduct', category_id=0, product_id=0) }}" method='POST'>
-	<p>Are you sure you want to delete !myproduct! ?</p>
+<form action="{{ url_for('deleteProduct', category_id=deletedProduct.category.id, product_id=deletedProduct.id) }}" method='POST'>
+	<p>Are you sure you want to delete {{deletedProduct.name}} ?</p>
 	<input type='submit' value='Yes'>
-	<a class="cancelButton" href="/catalog/0">Cancel</a>
+	<a class="cancelButton" href="/catalog/{{category_id}}">Cancel</a>
 </form>
 
 {% endblock %}
