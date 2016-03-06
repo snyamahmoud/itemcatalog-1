@@ -4,21 +4,21 @@
 
 <h2>Edit Product</h2>
 
-<form action="{{ url_for('editProduct', category_id=0, product_id=0) }}" method='POST'>
+<form action="{{ url_for('editProduct', category_id=editedProduct.category_id, product_id=editedProduct.id) }}" method='POST'>
 	<p>Name:</p>
-	<input type='text' size='30' name='name'>
+	<input type='text' size='30' name='name' placeholder="{{editedProduct.name}}">
 	<br>
 	<p>Description:</p>
-	<input type='text' size='30' name='description'>
+	<input type='text' size='30' name='description' placeholder="{{editedProduct.description}}">
 	<br>
 	<p>Price:</p>
-	<input type='text' size='30' name='price'>
+	<input type='text' size='30' name='price' placeholder="{{editedProduct.price}}">
 	<br>
 	<p>Category:</p>
-	<input type='text' size='30' name='category'>
+	<input type='text' size='30' name='category' placeholder="{{editedProduct.category.name}}">
 	<br>
 	<input type='submit' value='Save'>
-	<a class="cancelButton" href="/catalog/0">Cancel</a>
+	<a class="cancelButton" href="/catalog/editedProduct.category_id">Cancel</a>
 </form>
 
 {% endblock %}
