@@ -21,6 +21,18 @@ def GetAllCategories():
     return categories
 
 
+def GetSingleCategory(category_id):
+    """ Get a single category.
+
+    Args:
+            category_id: the ID of the category to get.
+    Returns:
+            singleCategory: a Category object.
+    """
+    singleCategory = session.query(Category).filter_by(id=category_id).one()
+    return singleCategory
+
+
 def GetAllProducts(category_id):
     """ Get a list of all products in a category.
 
@@ -83,7 +95,7 @@ def addCategory():
 @app.route('/catalog/<int:category_id>/edit/',
            methods=['GET', 'POST'])
 def editCategory(category_id):
-    editedCategory = session.query(Category).filter_by(id=category_id).one()
+    editedCategory = GetSingleCategory(category_id)
 
     if request.method == 'POST':
         if request.form['name']:
@@ -101,7 +113,7 @@ def editCategory(category_id):
 @app.route('/catalog/<int:category_id>/delete/',
            methods=['GET', 'POST'])
 def deleteCategory(category_id):
-    deletedCategory = session.query(Category).filter_by(id=category_id).one()
+    deletedCategory = GetSingleCategory(category_id)
 
     if request.method == 'POST':
         session.delete(deletedCategory)
@@ -115,7 +127,7 @@ def deleteCategory(category_id):
 
 @app.route('/catalog/<int:category_id>/')
 def productListing(category_id):
-    listCategory = session.query(Category).filter_by(id=category_id).one()
+    listCategory = GetSingleCategory(category_id)
     return render_template('list_all_products.html',
                            categories=GetAllCategories(),
                            listCategory=listCategory,
