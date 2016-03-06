@@ -72,6 +72,11 @@ def GetSingleProduct(product_id):
 @app.route('/')
 @app.route('/catalog/')
 def categoryListing():
+    """ Display the home page of the catalog.
+
+    Returns:
+        The home page of the catalog.
+    """
     return render_template('list_all_categories.html',
                            categories=GetAllCategories(),
                            products=GetLatestProducts())
@@ -80,6 +85,12 @@ def categoryListing():
 @app.route('/catalog/add/',
            methods=['GET', 'POST'])
 def addCategory():
+    """ Add a category to the catalog. Supports GET and POST.
+
+    Returns:
+        GET: the New Category form.
+        POST: the product listing for the new category.
+    """
     if request.method == 'POST':
         if request.form['name']:
             newCategory = Category(name=request.form['name'])
@@ -95,6 +106,14 @@ def addCategory():
 @app.route('/catalog/<int:category_id>/edit/',
            methods=['GET', 'POST'])
 def editCategory(category_id):
+    """ Edit a category. Supports GET and POST.
+
+    Args:
+        category_id: the ID of the category to edit.
+    Returns:
+        GET: the Edit Category form.
+        POST: the product listing for the edited category.
+    """
     editedCategory = GetSingleCategory(category_id)
 
     if request.method == 'POST':
@@ -113,6 +132,14 @@ def editCategory(category_id):
 @app.route('/catalog/<int:category_id>/delete/',
            methods=['GET', 'POST'])
 def deleteCategory(category_id):
+    """ Delete a category. Supports GET and POST.
+
+    Args:
+        category_id: the ID of the category to delete.
+    Returns:
+        GET: the Delete Category form.
+        POST: the home page of the catalog.
+    """
     deletedCategory = GetSingleCategory(category_id)
 
     if request.method == 'POST':
@@ -127,6 +154,13 @@ def deleteCategory(category_id):
 
 @app.route('/catalog/<int:category_id>/')
 def productListing(category_id):
+    """ List all products for a category.
+
+    Args:
+        category_id: the ID of the category to get the product listing for.
+    Returns:
+        The product listing for the selected category.
+    """
     listCategory = GetSingleCategory(category_id)
     return render_template('list_all_products.html',
                            categories=GetAllCategories(),
@@ -136,6 +170,14 @@ def productListing(category_id):
 
 @app.route('/catalog/<int:category_id>/<int:product_id>/view/')
 def viewProduct(category_id, product_id):
+    """ View the details of the selected product.
+
+    Args:
+        category_id: the ID of the category that the product is in.
+        product_id: the ID of the selected product.
+    Returns:
+        A page with the product details.
+    """
     return render_template('view_product.html',
                            categories=GetAllCategories(),
                            singleproduct=GetSingleProduct(product_id))
@@ -144,6 +186,14 @@ def viewProduct(category_id, product_id):
 @app.route('/catalog/<int:category_id>/add/',
            methods=['GET', 'POST'])
 def addProduct(category_id):
+    """ Add a product to the selected category.
+
+    Args:
+        category_id: the ID of the category to add the product to.
+    Returns:
+        GET: the New Product form.
+        POST: the product listing for the selected category.
+    """
     if request.method == 'POST':
         if request.form['name']:
             newProduct = Product(name=request.form['name'],
@@ -163,6 +213,15 @@ def addProduct(category_id):
 @app.route('/catalog/<int:category_id>/<int:product_id>/edit/',
            methods=['GET', 'POST'])
 def editProduct(category_id, product_id):
+    """ Edit a product.
+
+    Args:
+        category_id: the ID of the category that the product is in.
+        product_id: the ID of the selected product.
+    Returns:
+        GET: the Edit Product form.
+        POST: the product listing for the selected category.
+    """
     editedProduct = GetSingleProduct(product_id)
 
     if request.method == 'POST':
@@ -183,6 +242,15 @@ def editProduct(category_id, product_id):
 @app.route('/catalog/<int:category_id>/<int:product_id>/delete/',
            methods=['GET', 'POST'])
 def deleteProduct(category_id, product_id):
+    """ Delete a product.
+
+    Args:
+        category_id: the ID of the category that the product is in.
+        product_id: the ID of the selected product.
+    Returns:
+        GET: the Delete Product form.
+        POST: the product listing for the selected category.
+    """
     deletedProduct = GetSingleProduct(product_id)
 
     if request.method == 'POST':
