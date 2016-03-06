@@ -129,10 +129,23 @@ def viewProduct(category_id, product_id):
                            singleproduct=GetSingleProduct(product_id))
 
 
-@app.route('/catalog/<int:category_id>/<int:product_id>/add/')
-def addProduct(category_id, product_id):
-    return render_template('add_product.html',
-                           categories=GetAllCategories())
+@app.route('/catalog/<int:category_id>/add/',
+           methods=['GET', 'POST'])
+def addProduct(category_id):
+    if request.method == 'POST':
+        if request.form['name']:
+            newProduct = Product(name=request.form['name'],
+                                 description=request.form['description'],
+                                 price=request.form['price'],
+                                 category_id=category_id)
+        session.add(newProduct)
+        session.commit()
+        return redirect(url_for('productListing',
+                                category_id=category_id))
+    else:
+        return render_template('add_product.html',
+                               categories=GetAllCategories(),
+                               category_id=category_id)
 
 
 @app.route('/catalog/<int:category_id>/<int:product_id>/edit/')
