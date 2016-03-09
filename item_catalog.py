@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, request, redirect
+from flask import Flask, render_template, url_for, request, redirect, jsonify
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from database_schema import Base, Category, Product
@@ -41,9 +41,13 @@ def GetAllProducts(category_id):
     Returns:
         products: a list of Product tuples of all products in a category.
     """
-    products = session.query(Product).\
-        filter_by(category_id=category_id).\
-        order_by(Product.name)
+    if category_id == 0:
+        products = session.query(Product).\
+            order_by(Product.category_id, Product.id)
+    else:
+        products = session.query(Product).\
+            filter_by(category_id=category_id).\
+            order_by(Product.name)
     return products
 
 
@@ -263,6 +267,28 @@ def deleteProduct(category_id, product_id):
                                categories=GetAllCategories(),
                                category_id=category_id,
                                deletedProduct=deletedProduct)
+
+
+@app.route('/catalog/allcategories/json/')
+def allCategoriesJSON():
+    """ API endpoint for JSON GET request - All Categories.
+
+    Returns:
+        A JSON response containing all categories in the catalog.
+    """
+    categories = GetAllCategories()
+    return jsonify(Category=[category.serialize for category in categories])
+
+
+@app.route('/catalog/allProducts/json/')
+def allProductsJSON():
+    """ API endpoint for JSON GET request - All Products.
+
+    Returns:
+        A JSON response containing all products in the catalog.
+    """
+    products = GetAllProducts(0)
+    return jsonify(Product=[product.serialize for product in products])
 
 
 if __name__ == '__main__':

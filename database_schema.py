@@ -31,6 +31,13 @@ class Category(Base):
     # When a category is deleted, remove all products.
     products = relationship("Product", cascade="delete")
 
+    # Return the category object in a format for JSON.
+    @property
+    def serialize(self):
+        return {'id': self.id,
+                'name': self.name
+                }
+
 
 class Product(Base):
     __tablename__ = 'product'
@@ -45,6 +52,16 @@ class Product(Base):
 
     # Names need to be unique to a category to support vanity URLs.
     unique_product_name = UniqueConstraint('category_id', 'name')
+
+    # Return the product object in a format for JSON.
+    @property
+    def serialize(self):
+        return {'id': self.id,
+                'name': self.name,
+                'description': self.description,
+                'price': self.price,
+                'category_id': self.category_id
+                }
 
 
 # Connect to the db engine.
