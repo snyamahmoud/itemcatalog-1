@@ -28,6 +28,9 @@ class Category(Base):
     # Names need to be unique to support vanity URLs.
     unique_category_name = UniqueConstraint('name')
 
+    # When a category is deleted, remove all products.
+    products = relationship("Product", cascade="delete")
+
 
 class Product(Base):
     __tablename__ = 'product'
