@@ -1,9 +1,28 @@
 from flask import Flask, render_template, url_for, request, redirect, jsonify
+from flask import session as login_session
+from flask import make_response
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+
 from database_schema import Base, Category, Product
 
+from oauth2client.client import flow_from_clientsecrets
+from oauth2client.client import FlowExchangeError
+
+import random
+import string
+import httplib2
+import json
+import requests
+
+
 app = Flask(__name__)
+
+
+CLIENT_ID = json.loads(
+    open('client_secrets.json', 'r').read())['web']['client_id']
+
 
 engine = create_engine('sqlite:///itemcatalog.db')
 Base.metadata.bind = engine
@@ -71,6 +90,160 @@ def GetSingleProduct(product_id):
     """
     singleProduct = session.query(Product).filter_by(id=product_id).one()
     return singleProduct
+
+
+@app.route('/login/')
+def userLogin():
+    """ Display the login page of the catalog.
+
+    Returns:
+        The login page of the catalog.
+    """
+    # Generate an anti forgery state token.
+    state = ''.join(random.choice(string.ascii_uppercase + string.digits)
+                    for x in xrange(32))
+    # Add the state token to the current login session.
+    login_session['state'] = state
+    return render_template('login.html',
+                           google_client_id=CLIENT_ID,
+                           state_token=state)
+
+
+@app.route('/googleConnect', methods=['POST'])
+def googleConnect():
+    """ Verify that the user login credentials are valid.
+     - verify the state token
+     - exchange token for credentials
+     - verify the credentials
+     - ensure the user is not already logged in
+     - store user data in local session
+     - welcome the user
+    """
+    # Ensure that the state token from the client matches
+    # the state token on the server.
+    if request.args.get('state') != login_session['state']:
+        # If the tokens don't match, notify the user and exit.
+        response = make_response(json.dumps('Invalid state parameter.'), 401)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+
+    # Obtain authorization code from the details the client submitted.
+    auth_code = request.data
+
+    try:
+        # Exchange the authorization code for a credentials object.
+        oauth_flow = flow_from_clientsecrets('client_secrets.json', scope='')
+        oauth_flow.redirect_uri = 'postmessage'
+        credentials = oauth_flow.step2_exchange(auth_code)
+    except FlowExchangeError:
+        # Something went wrong in the exchange process,
+        # notify the user and exit.
+        response = make_response(
+            json.dumps('Failed to exchange the authorization code for a credentials object.'), 401)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+
+    # Verify that the access token is valid.
+    access_token = credentials.access_token
+    url = ('https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=%s'
+           % access_token)
+    h = httplib2.Http()
+    result = json.loads(h.request(url, 'GET')[1])
+
+    # If there was an error in the access token info, abort.
+    if result.get('error') is not None:
+        response = make_response(json.dumps(result.get('error')), 500)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+
+    # Verify that the access token is used for the intended user.
+    gplus_id = credentials.id_token['sub']
+    if result['user_id'] != gplus_id:
+        response = make_response(
+            json.dumps("Token's user ID doesn't match given user ID."), 401)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+
+    # Verify that the access token is valid for this app.
+    if result['issued_to'] != CLIENT_ID:
+        response = make_response(
+            json.dumps("Token's client ID does not match app's."), 401)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+
+    # Verify the user is not already logged in.
+    stored_credentials = login_session.get('credentials')
+    stored_gplus_id = login_session.get('gplus_id')
+    if stored_credentials is not None and gplus_id == stored_gplus_id:
+        response = make_response(json.dumps('Current user is already connected.'),
+                                 200)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+
+    # Store the access token and user creds in the session for later use.
+    login_session['credentials'] = credentials.access_token
+    login_session['gplus_id'] = gplus_id
+
+    # Use the Goolge Plus API to get more info about the user.
+    userinfo_url = "https://www.googleapis.com/oauth2/v1/userinfo"
+    params = {'access_token': credentials.access_token, 'alt': 'json'}
+    answer = requests.get(userinfo_url, params=params)
+
+    # Save the user data to a json object.
+    data = answer.json()
+
+    # Store the user data in the login session.
+    login_session['username'] = data['name']
+    login_session['picture'] = data['picture']
+    login_session['email'] = data['email']
+
+    output = ''
+    output += '<h1>Welcome, '
+    output += login_session['username']
+    output += '!</h1>'
+    output += '<img src="'
+    output += login_session['picture']
+    output += ' " style = "width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
+    return output
+
+
+@app.route('/logout/')
+def userLogout():
+    """ Log the user out."""
+    access_token = login_session['credentials']
+
+    if access_token is None:
+        # No one is logged in, abort.
+        print 'Access Token is None'
+        response = make_response(json.dumps('Current user not connected.'), 401)
+        response.headers['Content-Type`'] = 'application/json'
+        return response
+
+    # Use Google API to revoke the token.
+    url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % access_token
+    h = httplib2.Http()
+
+    # Grab the result from Google.
+    result = h.request(url, 'GET')[0]
+
+    if result['status'] == '200':
+        # Success, user was logged out.
+        del login_session['credentials']
+        del login_session['gplus_id']
+        del login_session['username']
+        del login_session['email']
+        del login_session['picture']
+        print "success logout"
+        response = make_response(json.dumps('Successfully disconnected.'), 200)
+        response.headers['Content-Type'] = 'application/json'
+        return redirect(url_for('categoryListing'))
+    else:
+        # Something went wrong, notify the user.
+        print "FAIL logout"
+        response = make_response(json.dumps(
+            result, 400))
+        response.headers['Content-Type'] = 'application/json'
+        return response
 
 
 @app.route('/')

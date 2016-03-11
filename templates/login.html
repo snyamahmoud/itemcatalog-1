@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div id="signInButton">
+
+	<span class="g-signin" data-scope="openid email" data-clientid="{{google_client_id}}" data-redirecturi="postmessage" data-accesstype="offline" data-cookiepolicy="single_host_origin" data-callback="signInCallback" data-approvalprompt="force">
+	</span>
+</div>
+
+<div id="result"></div>
+
+<script>
+	function signInCallback(authResult)
+	{
+		// This function is called if the user grants us access to their profile.
+
+		if (authResult['code']) // Auth via Google was successful.
+		{
+			// Send the one-time-use code to the server.
+			// If the server responds, write a 'login successful' message,
+			// then redirect back to item catalog home page.
+			$.ajax({
+				type: 'POST',
+				url: '/googleConnect?state={{state_token}}', // Call the method to validate the token.
+				processData: false, // Don't process into a string.
+				data: authResult['code'], // Send the one time use code.
+				contentType: 'application/octet-stream; charset=utf-8',
+
+				success: function(result)
+				{
+					// Handle or verify the server response if necessary.
+					if (result)
+					{
+						// Notify the user that login was successful.
+						// Display a message on screen for 4 seconds,
+						// then redirect to the home page.
+						$('#result').html('Login Successful!</br>'+ result + '</br>Redirecting...')
+						setTimeout(function()
+						{
+							window.location.href = "{{url_for('categoryListing')}}";
+						},
+						4000);
+					}
+					else
+					if (authResult['error'])
+					{
+						// Some sort of error ocurred, notify the user.
+						$('#result').html('There was an error: ' + authResult['error'])
+						console.log('There was an error: ' + authResult['error']);
+					}
+					else
+					{
+						// There was no response from the server, notify the user.
+						$('#result').html('Failed to make a server-side call. Check your configuration and console.');
+					}
+				}
+			});
+		}
+	}
+</script>
+
+{% endblock %}
