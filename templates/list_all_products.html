@@ -2,19 +2,26 @@
 
 {% block content %}
 
+<div class="category-header purple fjalla">
 	<h2>{{listCategory.name}}</h2>
+</div>
 
-	<a href="{{url_for('addProduct', category_id = listCategory.id)}}">New Product</a>
-	</br>
+<div class="button purple" onclick="location.href='{{url_for('addProduct', category_id = listCategory.id)}}';">
+	New Product
+</div>
 
-	<ul>
-		{% for product in products %}
-			<li>
-				<a href="{{url_for('viewProduct', category_id = product.category_id, product_id = product.id)}}">{{product.name}}</a>
-				<a href="{{url_for('editProduct', category_id = product.category_id, product_id = product.id)}}">Edit</a>
-				<a href="{{url_for('deleteProduct', category_id = product.category_id, product_id = product.id)}}">Delete</a>
-			</li>
-		{% endfor %}
-	</ul>
+<div class="white spacer"></div>
+
+<ul>
+	{% for product in products %}
+		<li>
+			<div class="button orange" onclick="location.href='{{url_for('viewProduct', category_id = product.category_id, product_id = product.id)}}';">
+				{{product.name}}
+			</div>
+			<!-- <div class="button green left" onclick="location.href='{{url_for('editProduct', category_id = product.category_id, product_id = product.id)}}';">Edit</div> -->
+			<!-- <div class="button red left" onclick="location.href='{{url_for('deleteProduct', category_id = product.category_id, product_id = product.id)}}';">Delete</div> -->
+		</li>
+	{% endfor %}
+</ul>
 
 {% endblock %}

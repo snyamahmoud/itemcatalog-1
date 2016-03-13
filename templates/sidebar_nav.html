@@ -2,17 +2,28 @@
 
 {% block sidebar %}
 
-	<h2>Categories</h2>
-    <a href="{{url_for('addCategory')}}">New Category</a>
-	<ul>
-		{% for category in categories %}
-			<li>
-				<a href="{{url_for('productListing', category_id = category.id)}}">{{category.name}}</a>
-				<a href="{{url_for('editCategory', category_id = category.id)}}">Edit</a>
-				<a href="{{url_for('deleteCategory', category_id = category.id)}}">Delete</a>
-			</li>
-		{% endfor %}
-	</ul>
+	<div class="category-header purple fjalla">
+		<h2>Categories</h2>
+	</div>
+
+	<div class="button purple" onclick="location.href='{{url_for('addCategory')}}';">
+    	New Category
+    </div>
+
+    <div class="white spacer"></div>
+
+	{% for category in categories %}
+	<!-- <div class="row"> -->
+		<!-- <div class="col-xs-10 button orange left" onclick="location.href='{{url_for('productListing', category_id = category.id)}}';"> -->
+		<div class="button orange" onclick="location.href='{{url_for('productListing', category_id = category.id)}}';">
+			{{category.name}}
+		</div>
+		<!-- <div class="col-xs-1 button green left" onclick="location.href='{{url_for('editCategory', category_id = category.id)}}';">Edit
+		</div>
+		<div class="col-xs-1 button red left" onclick="location.href='{{url_for('deleteCategory', category_id = category.id)}}';">Delete
+		</div> -->
+	<!-- </div> -->
+	{% endfor %}
 
 {% endblock %}
 

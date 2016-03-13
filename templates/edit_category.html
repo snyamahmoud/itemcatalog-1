@@ -2,13 +2,18 @@
 
 {% block content %}
 
-<h2>Edit Category</h2>
+<div class="form-header purple fjalla">
+	<h2>Edit Category</h2>
+</div>
+
+<div class="white spacer"></div>
 
 <form action="{{ url_for('editCategory', category_id=editedCategory.id) }}" method='POST'>
 	<p>Name:</p>
 	<input type='text' size='30' name='name' placeholder="{{editedCategory.name}}">
-	<input type='submit' value='Save'>
-	<a class="cancelButton" href="/">Cancel</a>
+	<div class="white spacer"></div>
+	<input class="green button-form" type='submit' value='Save'>
+	<div class="button-cancel button-form" onclick="location.href='{{url_for('categoryListing')}}';">Cancel</div>
 </form>
 
 {% endblock %}

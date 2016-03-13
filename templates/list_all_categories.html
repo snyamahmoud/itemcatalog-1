@@ -2,14 +2,18 @@
 
 {% block content %}
 
+<div class="category-header purple fjalla">
 	<h2>Latest Items</h2>
+</div>
 
-	<ul>
-		{% for product in products %}
-			<li>
-				{{product.name}} ({{product.description}})
-			</li>
-		{% endfor %}
-	</ul>
+<div class="white spacer"></div>
+
+<ul>
+	{% for product in products %}
+		<li>
+			{{product.name}} ({{product.description}})
+		</li>
+	{% endfor %}
+</ul>
 
 {% endblock %}

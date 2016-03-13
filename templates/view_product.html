@@ -2,13 +2,20 @@
 
 {% block content %}
 
-<h2>{{singleproduct.name}}</h2>
+<div class="category-header purple fjalla">
+	<h2>{{singleproduct.category.name}} - {{singleproduct.name}}</h2>
+</div>
 
-<p>Description:{{singleproduct.description}}</p>
-<p>Price:{{singleproduct.price}}</p>
-<p>Category:{{singleproduct.category.name}}</p>
-<a href="{{url_for('editProduct', category_id = singleproduct.category_id, product_id = singleproduct.id)}}">Edit</a>
-<a href="{{url_for('deleteProduct', category_id = singleproduct.category_id, product_id = singleproduct.id)}}">Delete</a>
-<a class="cancelButton" href="/catalog/{{singleproduct.category_id}}">Cancel</a>
+<div class="white spacer"></div>
+
+<label>Description:</label><label class="description">{{singleproduct.description}}</label><br>
+<label>Price:</label><label>{{singleproduct.price}}</label><br>
+<label>Category:</label><label>{{singleproduct.category.name}}</label><br>
+
+<div class="white spacer"></div>
+
+<!-- <div class="button green left" onclick="location.href='{{url_for('editProduct', category_id = singleproduct.category_id, product_id = singleproduct.id)}}';">Edit</div> -->
+<!-- <div class="button red left" onclick="location.href='{{url_for('deleteProduct', category_id = singleproduct.category_id, product_id = singleproduct.id)}}';">Delete</div> -->
+<div class="button-cancel button-form" onclick="location.href='{{url_for('productListing', category_id=singleproduct.category_id)}}';">Cancel</div>
 
 {% endblock %}

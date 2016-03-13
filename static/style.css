@@ -1,12 +1,266 @@
+
+/* Standard Tags */
+
+html
+{
+	height: 100vh;
+}
+
+body
+{
+	min-height: 100vh;
+	font-family: 'Varela Round', sans-serif;
+	margin-top: 15px;
+	margin-bottom: 15px;
+	margin-left: 10%;
+	margin-right: 10%;
+}
+
+h2
+{
+	margin: 0px;
+	padding-top: 50px;
+}
+
+
+input[type=submit]
+{
+    padding: 4px 15px;
+    border: none;
+    cursor: pointer;
+	margin: 5px;
+}
+
+label
+{
+	width: 100px;
+}
+
+li
+{
+	list-style-type: none;
+}
+
+/* Main Page */
+
 .header,
 .footer
 {
-	background-color: #FF9933;
-	color: #CC0000;
+	background-color: #4D6600; /*dark green*/
+	color: #FFF; /* white */
 	padding: 5px 25px;
 }
 
-ul
+.header
 {
-	list-style-type: none;
+	height: 110px;
+}
+
+.footer
+{
+	height: 50px;
+}
+
+.header-sub
+.footer-sub
+{
+	margin: 0;
+	padding: 0;
+	border: 0;
+	height: 100%;
+}
+
+.gutter-left-none
+{
+	padding-left: 0px;
+}
+
+.gutter-right-small
+{
+	padding-right: 7px;
+}
+
+.gutter-left-right
+{
+	padding: 0px 7px;
+}
+
+.gutter-all
+{
+	padding: 7px;
+}
+
+.full-height
+{
+	height: 100vh;
+}
+
+.left
+{
+    float: left;
+    vertical-align: middle;
+    width: 40%;
+    height: 100%;
+}
+
+.right
+{
+	float: right;
+    text-align: right;
+    vertical-align: middle;
+    width: 60%;
+}
+
+.description
+{
+	width: 250px;
+}
+
+.button-form
+{
+	float: left;
+	width: 75px;
+}
+
+.button-cancel
+{
+	margin: 5px;
+	background-color: #B30000;
+	font: bold;
+	font-size: 15px;
+	text-decoration: none;
+	padding: 4px 15px;
+	cursor: pointer;
+	overflow: hidden;
+	height: 28px;
+	color: #FFF;
+}
+
+.button
+{
+	font: bold;
+	font-size: 15px;
+	text-decoration: none;
+	padding: 4px 15px;
+	margin-top: 1px;
+	cursor: pointer;
+	overflow: hidden;
+}
+
+.button.orange:hover
+{
+	background-color: #F90;
+	color: #CC7A00;
+}
+
+.button.green:hover
+{
+	background-color: #86B300;
+}
+
+.button.purple.login,
+.button.purple.logout
+{
+	text-align: center;
+	width: 20%;
+	float: right;
+}
+
+.button.purple:hover
+{
+	background-color: #86B300;
+}
+
+.button.red:hover
+{
+	background-color: #FF3333;
+}
+
+.category-header,
+.form-header
+{
+	height: 100px;
+	padding: 4px 15px;
+}
+
+.spacer
+{
+	height: 7px;
+}
+
+.spacer-button
+{
+	height: 30px;
+}
+
+/* Colours */
+
+/* bright orange 	#F90*/
+/* dark orange 		#CC7A00*/
+/* light green 		#86b300*/
+/* dark green 		#4d6600*/
+/* purple 			#800080*/
+
+.green
+{
+	background-color: #4D6600;
+	color: #FFF;
+}
+
+.green-light
+{
+	background-color: #86B300;
+}
+
+.red
+{
+	background-color: #B30000;
+	color: #FFF;
+}
+
+.red-light
+{
+	background-color: #FF3333;
+	color: #FFF;
+}
+
+.orange
+{
+	background-color: #CC7A00;
+	color: #F90;
+}
+
+.orange-light
+{
+	background-color: #F90;
+	color: #CC7A00;
+}
+
+.purple
+{
+	background-color: #800080;
+	color: #FFF;
+}
+
+.purple-light
+{
+	background-color: #e600e6;
+	color: #800080;
+}
+
+.white
+{
+	background-color: #FFF;
+}
+
+/* Fonts */
+
+.fjalla
+{
+	font-family: 'Fjalla One', sans-serif;
+}
+
+.passion-one
+{
+	font-family: 'Passion One', cursive;
 }

@@ -2,23 +2,35 @@
 
 {% block content %}
 
-<h2>New Product</h2>
+<div class="form-header purple fjalla">
+	<h2>New Product</h2>
+</div>
+
+<div class="white spacer"></div>
 
 <form action="{{ url_for('addProduct', category_id=category_id) }}" method='POST'>
-	<p>Name:</p>
+	<label>Name:</label>
 	<input type='text' size='30' name='name'>
 	<br>
-	<p>Description:</p>
+	<div class="white spacer"></div>
+
+	<label>Description:</label>
 	<input type='text' size='30' name='description'>
 	<br>
-	<p>Price:</p>
+	<div class="white spacer"></div>
+
+	<label>Price:</label>
 	<input type='text' size='30' name='price'>
 	<br>
-	<p>Category:</p>
+	<div class="white spacer"></div>
+
+	<label>Category:</label>
 	<input type='text' size='30' name='category'>
 	<br>
-	<input type='submit' value='Add'>
-	<a class="cancelButton" href="/catalog/{{category_id}}">Cancel</a>
+	<div class="white spacer"></div>
+
+	<input class="green button-form" type='submit' value='Add'>
+	<div class="button-cancel button-form" onclick="location.href='{{url_for('productListing', category_id=category_id)}}';">Cancel</div>
 </form>
 
 {% endblock %}

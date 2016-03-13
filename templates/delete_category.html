@@ -2,12 +2,18 @@
 
 {% block content %}
 
-<h2>Delete Category</h2>
+<div class="form-header purple fjalla">
+	<h2>Delete Category</h2>
+</div>
+
+<div class="white spacer"></div>
 
 <form action="{{ url_for('deleteCategory', category_id=deletedCategory.id) }}" method='POST'>
+	<div class="white spacer"></div>
 	<p>Are you sure you want to delete {{deletedCategory.name}} ?</p>
-	<input type='submit' value='Yes'>
-	<a class="cancelButton" href="/">Cancel</a>
+	<div class="white spacer"></div>
+	<input class="green button-form" type='submit' value='Yes'>
+	<div class="button-cancel button-form" onclick="location.href='{{url_for('categoryListing')}}';">Cancel</div>
 </form>
 
 {% endblock %}

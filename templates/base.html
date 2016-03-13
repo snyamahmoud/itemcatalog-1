@@ -13,6 +13,9 @@
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
 
 		<!-- Internal Styling -->
+		<link href='https://fonts.googleapis.com/css?family=Varela+Round' rel='stylesheet' type='text/css'>
+		<link href='https://fonts.googleapis.com/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
+		<link href='https://fonts.googleapis.com/css?family=Passion+One:700' rel='stylesheet' type='text/css'>
 		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
 
 		<!-- Load pre-req for Google sign in. -->
@@ -20,31 +23,57 @@
 		<script src="//apis.google.com/js/platform.js?onload=start"> </script>
 	</head>
 
-	<body>
-		<div class="header">
-			<a href="/"><h1>Item Catalog</h1></a>
+	<body class="green-light container">
+
+		<!-- Header -->
+		<div class="white gutter-all">
+			<div class="header">
+				<div class="header-sub left fjalla button" onclick="location.href='{{ url_for('categoryListing') }}';">
+					<h1>Item Catalog</h1>
+				</div>
+				<div class="header-sub right">
+					<div class="spacer-button">
+						User: Guest
+					</div>
+					<div class="spacer-button">
+						<div class="button purple login" onclick="location.href='{{ url_for('userLogin') }}';">
+							Login
+						</div>
+					</div>
+					<div class="spacer-button">
+						<div class="button purple logout" onclick="location.href='{{ url_for('userLogout') }}';">
+							Logout
+						</div>
+					</div>
+				</div>
+			</div>
 		</div>
 
-		<div class="container">
+		<!-- Main Content -->
+		<div class="full-height white gutter-left-right">
 			<div class="row">
-				<div class="col-xs-1 col-sm-2 col-md-3">
+				<div class="col-xs-3 gutter-right-small">
 					{% block sidebar %}
 					{% endblock %}
 				</div>
-				<div class="col-xs-11 col-sm-10 col-md-9">
+				<div class="col-xs-9 gutter-left-none">
 					{% block content %}
 					{% endblock %}
 				</div>
 			</div>
 		</div>
 
-		<div class="footer">
-			<h4>&copy; XYZ Company</h4>
-			<a href="{{ url_for('allCategoriesJSON') }}">JSON-AllCategories</a>
-			<a href="{{ url_for('allProductsJSON') }}">JSON-AllProducts</a>
-			<a href="{{ url_for('userLogin') }}">Login</a>
-			<a href="{{ url_for('userLogout') }}">Logout</a>
-			<div>User: </div>
+		<!-- Footer -->
+		<div class="white gutter-all">
+			<div class="footer">
+				<div class="footer-sub left fjalla">
+					<h4>&copy; XYZ Company</h4>
+				</div>
+				<div class="footer-sub right">
+					<a href="{{ url_for('allCategoriesJSON') }}">TODO: hover quality JSON-AllCategories</a><br>
+					<a href="{{ url_for('allProductsJSON') }}">TODO: hover quality JSON-AllProducts</a>
+				</div>
+			</div>
 		</div>
 	</body>
 </html>

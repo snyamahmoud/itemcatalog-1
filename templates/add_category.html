@@ -2,13 +2,20 @@
 
 {% block content %}
 
-<h2>New Category</h2>
+<div class="form-header purple fjalla">
+	<h2>New Category</h2>
+</div>
+
+<div class="white spacer"></div>
 
 <form action="{{ url_for('addCategory') }}" method='POST'>
-	<p>Name:</p>
+	<label>Name:</label>
 	<input type='text' size='30' name='name'>
-	<input type='submit' value='Add'>
-	<a class="cancelButton" href="/">Cancel</a>
+	<br>
+	<div class="white spacer"></div>
+
+	<input class="green button-form" type='submit' value='Add'>
+	<div class="button-cancel button-form" onclick="location.href='{{url_for('categoryListing')}}';">Cancel</div>
 </form>
 
 {% endblock %}
