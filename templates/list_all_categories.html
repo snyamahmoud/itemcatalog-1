@@ -8,12 +8,19 @@
 
 <div class="white spacer"></div>
 
-<ul>
-	{% for product in products %}
-		<li>
-			{{product.name}} ({{product.description}})
-		</li>
-	{% endfor %}
-</ul>
+<h3 class="description float-left">Product</h3>
+<h3 class="description float-left">Description</h3>
+<h3 class="description float-left">Category</h3>
+
+<div class="white spacer float-none"></div>
+
+{% for product in products %}
+	<div class="float-none">
+		<label class="description float-left">{{product.name}}</label>
+		<label class="description float-left">{{product.description}}</label>
+		<div class="button orange float-left" onclick="location.href='{{url_for('productListing', category_id = product.category_id)}}';">{{product.category.name}}</div>
+	</div>
+{% endfor %}
+
 
 {% endblock %}

@@ -36,11 +36,6 @@ label
 	width: 100px;
 }
 
-li
-{
-	list-style-type: none;
-}
-
 /* Main Page */
 
 .header,
@@ -95,6 +90,16 @@ li
 	height: 100vh;
 }
 
+.float-none
+{
+	clear: both;
+}
+
+.float-left
+{
+	float: left;
+}
+
 .left
 {
     float: left;
@@ -113,12 +118,11 @@ li
 
 .description
 {
-	width: 250px;
+	width: 30%;
 }
 
-.button-form
+.mini
 {
-	float: left;
 	width: 75px;
 }
 
