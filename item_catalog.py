@@ -175,7 +175,7 @@ def googleConnect():
     stored_credentials = login_session.get('credentials')
     stored_gplus_id = login_session.get('gplus_id')
     if stored_credentials is not None and gplus_id == stored_gplus_id:
-        response = make_response(json.dumps('Current user is already connected.'),
+        response = make_response(json.dumps('You are already logged in! Redirecting ...'),
                                  200)
         response.headers['Content-Type'] = 'application/json'
         return response
@@ -210,14 +210,18 @@ def googleConnect():
 @app.route('/logout/')
 def userLogout():
     """ Log the user out."""
-    access_token = login_session['credentials']
+    access_token = None
+
+    if login_session:
+        if login_session.get('credentials'):
+            access_token = login_session['credentials']
 
     if access_token is None:
         # No one is logged in, abort.
         print 'Access Token is None'
         response = make_response(json.dumps('Current user not connected.'), 401)
         response.headers['Content-Type`'] = 'application/json'
-        return response
+        return redirect(url_for('categoryListing'))
 
     # Use Google API to revoke the token.
     url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % access_token
