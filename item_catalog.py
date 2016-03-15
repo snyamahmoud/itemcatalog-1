@@ -198,12 +198,12 @@ def googleConnect():
     login_session['email'] = data['email']
 
     output = ''
-    output += '<h1>Welcome, '
-    output += login_session['username']
-    output += '!</h1>'
-    output += '<img src="'
+    output += '<img class="float-left" src="'
     output += login_session['picture']
-    output += ' " style = "width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
+    output += ' " style = "width: 40px; height: 40px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
+    output += '<h3 class="float-left">Welcome, '
+    output += login_session['username']
+    output += '!</h3>'
     return output
 
 

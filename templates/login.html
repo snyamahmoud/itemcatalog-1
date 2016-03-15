@@ -16,6 +16,9 @@
 
 		if (authResult['code']) // Auth via Google was successful.
 		{
+		    // Hide the sign-in button now that the user is authorized
+		    $('#signInButton').attr('style', 'display: none');
+
 			// Send the one-time-use code to the server.
 			// If the server responds, write a 'login successful' message,
 			// then redirect back to item catalog home page.
@@ -34,7 +37,7 @@
 						// Notify the user that login was successful.
 						// Display a message on screen for 4 seconds,
 						// then redirect to the home page.
-						$('#result').html('Login Successful!</br>'+ result + '</br>Redirecting...')
+						$('#result').html(result)
 						setTimeout(function()
 						{
 							window.location.href = "{{url_for('categoryListing')}}";
