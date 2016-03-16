@@ -213,7 +213,7 @@ def userLogout():
     access_token = None
 
     if login_session:
-        if login_session.get('credentials'):
+        if 'credentials' in login_session:
             access_token = login_session['credentials']
 
     if access_token is None:
@@ -272,6 +272,10 @@ def addCategory():
         GET: the New Category form.
         POST: the product listing for the new category.
     """
+    print login_session
+    if 'username' not in login_session:
+        return redirect(url_for('userLogin'))
+
     if request.method == 'POST':
         if request.form['name']:
             newCategory = Category(name=request.form['name'])
@@ -295,6 +299,9 @@ def editCategory(category_id):
         GET: the Edit Category form.
         POST: the product listing for the edited category.
     """
+    if 'username' not in login_session:
+        return redirect(url_for('userLogin'))
+
     editedCategory = GetSingleCategory(category_id)
 
     if request.method == 'POST':
@@ -321,6 +328,9 @@ def deleteCategory(category_id):
         GET: the Delete Category form.
         POST: the home page of the catalog.
     """
+    if 'username' not in login_session:
+        return redirect(url_for('userLogin'))
+
     deletedCategory = GetSingleCategory(category_id)
 
     if request.method == 'POST':
@@ -375,6 +385,9 @@ def addProduct(category_id):
         GET: the New Product form.
         POST: the product listing for the selected category.
     """
+    if 'username' not in login_session:
+        return redirect(url_for('userLogin'))
+
     if request.method == 'POST':
         if request.form['name']:
             newProduct = Product(name=request.form['name'],
@@ -403,6 +416,9 @@ def editProduct(category_id, product_id):
         GET: the Edit Product form.
         POST: the product listing for the selected category.
     """
+    if 'username' not in login_session:
+        return redirect(url_for('userLogin'))
+
     editedProduct = GetSingleProduct(product_id)
 
     if request.method == 'POST':
@@ -432,6 +448,9 @@ def deleteProduct(category_id, product_id):
         GET: the Delete Product form.
         POST: the product listing for the selected category.
     """
+    if 'username' not in login_session:
+        return redirect(url_for('userLogin'))
+
     deletedProduct = GetSingleProduct(product_id)
 
     if request.method == 'POST':

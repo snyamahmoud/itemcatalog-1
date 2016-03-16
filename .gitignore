@@ -20,3 +20,5 @@ database_schema.pyc
 .hg/shelves/2016-03-05_14-50-50_parent_rev_10
 .hg/Trashcan/item_catalog_cyysql.py.bak
 *.bak
+client_secrets.json
+TODO.txt
