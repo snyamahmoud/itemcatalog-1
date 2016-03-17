@@ -12,16 +12,13 @@
 
 <div class="white spacer"></div>
 
-<ul>
-	{% for product in products %}
-		<li>
-			<div class="button orange" onclick="location.href='{{url_for('viewProduct', category_id = product.category_id, product_id = product.id)}}';">
-				{{product.name}}
-			</div>
-			<!-- <div class="button green left" onclick="location.href='{{url_for('editProduct', category_id = product.category_id, product_id = product.id)}}';">Edit</div> -->
-			<!-- <div class="button red left" onclick="location.href='{{url_for('deleteProduct', category_id = product.category_id, product_id = product.id)}}';">Delete</div> -->
-		</li>
-	{% endfor %}
-</ul>
+{% for product in products %}
+	<div class="button orange float-left" onclick="location.href='{{url_for('viewProduct', category_id = product.category_id, product_id = product.id)}}';">
+		{{product.name}}
+	</div>
+	<div class="button green-light mini float-left gutter-left" onclick="location.href='{{url_for('editProduct', category_id = product.category_id, product_id = product.id)}}';">Edit</div>
+	<div class="button red mini float-left gutter-left" onclick="location.href='{{url_for('deleteProduct', category_id = product.category_id, product_id = product.id)}}';">Delete</div>
+	<div class="white spacer float-none"></div>
+{% endfor %}
 
 {% endblock %}

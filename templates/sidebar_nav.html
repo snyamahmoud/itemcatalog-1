@@ -13,16 +13,20 @@
     <div class="white spacer"></div>
 
 	{% for category in categories %}
-	<!-- <div class="row"> -->
-		<!-- <div class="col-xs-10 button orange left" onclick="location.href='{{url_for('productListing', category_id = category.id)}}';"> -->
 		<div class="button orange" onclick="location.href='{{url_for('productListing', category_id = category.id)}}';">
 			{{category.name}}
 		</div>
-		<!-- <div class="col-xs-1 button green left" onclick="location.href='{{url_for('editCategory', category_id = category.id)}}';">Edit
+
+		<div class="white spacer"></div>
+
+		<div class="button green-light mini float-left" onclick="location.href='{{url_for('editCategory', category_id = category.id)}}';">Edit
 		</div>
-		<div class="col-xs-1 button red left" onclick="location.href='{{url_for('deleteCategory', category_id = category.id)}}';">Delete
-		</div> -->
-	<!-- </div> -->
+		<div class="button red mini float-left gutter-left" onclick="location.href='{{url_for('deleteCategory', category_id = category.id)}}';">Delete
+		</div>
+
+		<div class="float-none"></div>
+		<div class="white spacer"></div>
+		<div class="white spacer"></div>
 	{% endfor %}
 
 {% endblock %}

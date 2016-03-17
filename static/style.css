@@ -65,6 +65,16 @@ label
 	height: 100%;
 }
 
+.gutter-top
+{
+	margin-top: 5px;
+}
+
+.gutter-left
+{
+	margin-left: 5px;
+}
+
 .gutter-left-none
 {
 	padding-left: 0px;
@@ -83,11 +93,6 @@ label
 .gutter-all
 {
 	padding: 7px;
-}
-
-.full-height
-{
-	height: 100vh;
 }
 
 .float-none
@@ -162,6 +167,16 @@ label
 	background-color: #86B300;
 }
 
+.button.green-light
+{
+	color: #FFF;
+}
+
+.button.green-light:hover
+{
+	background-color: #4D6600;
+}
+
 .button.purple.login,
 .button.purple.logout
 {
@@ -177,7 +192,7 @@ label
 
 .button.red:hover
 {
-	background-color: #FF3333;
+	background-color: #B30000;
 }
 
 .category-header,
@@ -218,13 +233,13 @@ label
 
 .red
 {
-	background-color: #B30000;
+	background-color: #FF3333;
 	color: #FFF;
 }
 
 .red-light
 {
-	background-color: #FF3333;
+	background-color: #B30000;
 	color: #FFF;
 }
 
