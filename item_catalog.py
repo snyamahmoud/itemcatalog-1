@@ -117,11 +117,13 @@ def CreateUser(login_session):
     """
     newUser = User(name=login_session['username'],
                    email=login_session['email'],
-                   picture=login_session['picture'])
+                   picture=login_session['picture'],
+                   provider=login_session['provider'])
     session.add(newUser)
     session.commit()
 
-    user = session.query(User).filter_by(email=login_session['email']).one()
+    user = session.query(User).filter_by(email=login_session['email'],
+                                         provider=login_session['provider']).one()
     return user.id
 
 
@@ -135,7 +137,8 @@ def GetUserIDFromEmail(email):
         None: if the user is not found then None is returned.
     """
     try:
-        user = session.query(User).filter_by(email=email).one()
+        user = session.query(User).filter_by(email=email,
+                                             provider=login_session['provider']).one()
         return user.id
     except:
         return None
@@ -403,7 +406,6 @@ def userLogout():
 
     elif login_session['provider'] == 'facebook':
         facebook_id = login_session['facebook_id']
-        print facebook_id
         url = 'https://graph.facebook.com/%s/permissions' % facebook_id
         h = httplib2.Http()
         result = h.request(url, 'DELETE')[1]

@@ -34,16 +34,19 @@ def AddProduct(product_name,
 
 
 def AddUser(user_name,
-            user_email):
+            user_email,
+            user_provider):
     user = User(name=user_name,
-                email=user_email)
+                email=user_email,
+                provider=user_provider)
     session.add(user)
     session.commit()
     return user.id
 
 
 user_id = AddUser("Jenny",
-                  "jenny@jenny.ca")
+                  "jenny@jenny.ca",
+                  "hotmail")
 
 
 category_id = AddCategory("Swimming", user_id)

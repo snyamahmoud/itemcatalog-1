@@ -25,9 +25,10 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(250), nullable=False)
     email = Column(String(250), nullable=False)
+    provider = Column(String(50), nullable=False)
     picture = Column(String(250))
 
-    unique_email = UniqueConstraint('email')
+    unique_email = UniqueConstraint('email', 'provider')
 
 
 class Category(Base):
