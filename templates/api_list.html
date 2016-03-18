@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="button purple" onclick="location.href='{{url_for('allCategoriesJSON')}}';">
+	JSON - Categories
+</div>
+
+<div class="button purple" onclick="location.href='{{url_for('allProductsJSON')}}';">
+	JSON - Products
+</div>
+
+<div class="button purple" onclick="location.href='{{url_for('allCategoriesXML')}}';">
+	XML - Categories
+</div>
+
+<div class="button purple" onclick="location.href='{{url_for('allProductsXML')}}';">
+	XML - Products
+</div>
+
+{% endblock %}

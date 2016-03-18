@@ -131,6 +131,13 @@ label
 	width: 75px;
 }
 
+.mini.purple.button
+{
+	width: 65px;
+	float: right;
+	margin-top: 5px;
+}
+
 .button-cancel
 {
 	margin: 5px;

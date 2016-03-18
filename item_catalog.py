@@ -2,6 +2,8 @@ from flask import Flask, render_template, url_for, request, redirect, jsonify
 from flask import session as login_session
 from flask import make_response
 
+from xml.etree.ElementTree import Element, SubElement, Comment, tostring
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
@@ -323,6 +325,7 @@ def ConnectUser():
     output += login_session['username']
     output += '!</h3>'
     return output
+
 
 # Login / Logout Routing Methods ----------------------------------------------
 
@@ -672,6 +675,16 @@ def deleteProduct(category_id, product_id):
 # API Routing Methods ---------------------------------------------------------
 
 
+@app.route('/catalog/apiList')
+def apiList():
+    """ A list of all available API links.
+
+    Returns:
+        A page containing links to API endpoints.
+    """
+    return render_template('api_list.html')
+
+
 @app.route('/catalog/allcategories/json/')
 def allCategoriesJSON():
     """ API endpoint for JSON GET request - All Categories.
@@ -692,6 +705,63 @@ def allProductsJSON():
     """
     products = GetAllProducts(0)
     return jsonify(Product=[product.serialize for product in products])
+
+
+@app.route('/catalog/allcategories/xml/')
+def allCategoriesXML():
+    """ API endpoint for XML GET request - All Categories.
+
+    Returns:
+        An XML response containing all categories in the catalog.
+    """
+    top = Element('catalog')
+
+    categories = GetAllCategories()
+
+    for category in categories:
+        category_root = SubElement(top, 'category')
+
+        category_root_id = SubElement(category_root, 'id')
+        category_root_id.text = str(category.id)
+
+        category_root_name = SubElement(category_root, 'name')
+        category_root_name.text = str(category.name)
+
+    return render_template('xml_response.xml',
+                           xml_string=tostring(top))
+
+
+@app.route('/catalog/allProducts/xml/')
+def allProductsXML():
+    """ API endpoint for XML GET request - All Products.
+
+    Returns:
+        An XML response containing all products in the catalog.
+    """
+    top = Element('catalog')
+
+    products = GetAllProducts(0)
+
+    for product in products:
+        product_root = SubElement(top, 'product')
+
+        product_root_id = SubElement(product_root, 'id')
+        product_root_id.text = str(product.id)
+
+        product_root_name = SubElement(product_root, 'name')
+        product_root_name.text = str(product.name)
+
+        product_root_desc = SubElement(product_root, 'description')
+        product_root_desc.text = str(product.description)
+
+        product_root_price = SubElement(product_root, 'price')
+        product_root_price.text = str(product.price)
+
+        product_root_categoryid = SubElement(product_root, 'category_id')
+        product_root_categoryid.text = str(product.category.id)
+
+    return render_template('xml_response.xml',
+                           xml_string=tostring(top))
 
 
 # -----------------------------------------------------------------------------
