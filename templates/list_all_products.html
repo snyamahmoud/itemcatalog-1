@@ -6,9 +6,11 @@
 	<h2>{{listCategory.name}}</h2>
 </div>
 
-<div class="button purple" onclick="location.href='{{url_for('addProduct', category_id = listCategory.id)}}';">
-	New Product
-</div>
+{% if user is not none %}
+	<div class="button purple" onclick="location.href='{{url_for('addProduct', category_id = listCategory.id)}}';">
+		New Product
+	</div>
+{% endif %}
 
 <div class="white spacer"></div>
 
@@ -16,9 +18,14 @@
 	<div class="button orange float-left" onclick="location.href='{{url_for('viewProduct', category_id = product.category_id, product_id = product.id)}}';">
 		{{product.name}}
 	</div>
-	<div class="button green-light mini float-left gutter-left" onclick="location.href='{{url_for('editProduct', category_id = product.category_id, product_id = product.id)}}';">Edit</div>
-	<div class="button red mini float-left gutter-left" onclick="location.href='{{url_for('deleteProduct', category_id = product.category_id, product_id = product.id)}}';">Delete</div>
-	<div class="white spacer float-none"></div>
+
+	{% if product.user.id == user.id %}
+		<div class="button green-light mini float-left gutter-left" onclick="location.href='{{url_for('editProduct', category_id = product.category_id, product_id = product.id)}}';">Edit</div>
+		<div class="button red mini float-left gutter-left" onclick="location.href='{{url_for('deleteProduct', category_id = product.category_id, product_id = product.id)}}';">Delete</div>
+		<div class="white spacer float-none"></div>
+	{% else %}
+		<div class="float-none"></div>
+	{% endif %}
 {% endfor %}
 
 {% endblock %}

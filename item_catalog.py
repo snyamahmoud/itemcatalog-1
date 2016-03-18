@@ -5,7 +5,7 @@ from flask import make_response
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from database_schema import Base, Category, Product
+from database_schema import Base, Category, Product, User
 
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
@@ -30,6 +30,9 @@ DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
 
+# Category Helper Methods -----------------------------------------------------
+
+
 def GetAllCategories():
     """ Get a list of all categories in the catalog.
 
@@ -44,12 +47,15 @@ def GetSingleCategory(category_id):
     """ Get a single category.
 
     Args:
-            category_id: the ID of the category to get.
+        category_id: the ID of the category to get.
     Returns:
-            singleCategory: a Category object.
+        singleCategory: a Category object.
     """
     singleCategory = session.query(Category).filter_by(id=category_id).one()
     return singleCategory
+
+
+# Product Helper Methods ------------------------------------------------------
 
 
 def GetAllProducts(category_id):
@@ -90,6 +96,72 @@ def GetSingleProduct(product_id):
     """
     singleProduct = session.query(Product).filter_by(id=product_id).one()
     return singleProduct
+
+
+# User Helper Methods ---------------------------------------------------------
+
+
+def CreateUser(login_session):
+    """ Create a new user from the current session.
+
+    Args:
+        login_session: the current session.
+    Returns:
+        user.id: the ID of the new user that was created.
+    """
+    newUser = User(name=login_session['username'],
+                   email=login_session['email'],
+                   picture=login_session['picture'])
+    session.add(newUser)
+    session.commit()
+
+    user = session.query(User).filter_by(email=login_session['email']).one()
+    return user.id
+
+
+def GetUserIDFromEmail(email):
+    """ Attempt to find a user in the db using an email address.
+
+    Args:
+        email: the email of the user that you want to find.
+    Returns:
+        user: if the user is found a user id is returned.
+        None: if the user is not found then None is returned.
+    """
+    try:
+        user = session.query(User).filter_by(email=email).one()
+        return user.id
+    except:
+        return None
+
+
+def GetUserIDFromLoginSession():
+    """ Attempt to find a user in the db using the current session.
+
+    Returns:
+        user: if the user is found a user id is returned.
+        None: if the user is not found then None is returned.
+    """
+    if 'user_id' in login_session:
+        return login_session['user_id']
+    return None
+
+
+def GetUserInfo(user_id):
+    """ Get user information from the db.
+
+    Args:
+        user_id: the ID of the user to get.
+    Returns:
+        user: a User object.
+    """
+    if user_id is None:
+        return None
+    user = session.query(User).filter_by(id=user_id).one()
+    return user
+
+
+# Login / Logout Routing Methods ----------------------------------------------
 
 
 @app.route('/login/')
@@ -197,6 +269,12 @@ def googleConnect():
     login_session['picture'] = data['picture']
     login_session['email'] = data['email']
 
+    # Determine if the user exists, if it doesn't then create a new one.
+    user_id = GetUserIDFromEmail(login_session['email'])
+    if user_id is None:
+        user_id = CreateUser(login_session)
+    login_session['user_id'] = user_id
+
     output = ''
     output += '<img class="float-left" src="'
     output += login_session['picture']
@@ -250,6 +328,9 @@ def userLogout():
         return response
 
 
+# Category Routing Methods ----------------------------------------------------
+
+
 @app.route('/')
 @app.route('/catalog/')
 def categoryListing():
@@ -258,9 +339,14 @@ def categoryListing():
     Returns:
         The home page of the catalog.
     """
+    user_id = None
+    if 'user_id' in login_session:
+        user_id = login_session['user_id']
+
     return render_template('list_all_categories.html',
                            categories=GetAllCategories(),
-                           products=GetLatestProducts())
+                           products=GetLatestProducts(),
+                           user=GetUserInfo(GetUserIDFromLoginSession()))
 
 
 @app.route('/catalog/add/',
@@ -272,20 +358,21 @@ def addCategory():
         GET: the New Category form.
         POST: the product listing for the new category.
     """
-    print login_session
     if 'username' not in login_session:
         return redirect(url_for('userLogin'))
 
     if request.method == 'POST':
         if request.form['name']:
-            newCategory = Category(name=request.form['name'])
+            newCategory = Category(name=request.form['name'],
+                                   user_id=login_session['user_id'])
         session.add(newCategory)
         session.commit()
         return redirect(url_for('productListing',
                                 category_id=newCategory.id))
     else:
         return render_template('add_category.html',
-                               categories=GetAllCategories())
+                               categories=GetAllCategories(),
+                               user=GetUserInfo(GetUserIDFromLoginSession()))
 
 
 @app.route('/catalog/<int:category_id>/edit/',
@@ -314,7 +401,8 @@ def editCategory(category_id):
     else:
         return render_template('edit_category.html',
                                categories=GetAllCategories(),
-                               editedCategory=editedCategory)
+                               editedCategory=editedCategory,
+                               user=GetUserInfo(GetUserIDFromLoginSession()))
 
 
 @app.route('/catalog/<int:category_id>/delete/',
@@ -340,7 +428,11 @@ def deleteCategory(category_id):
     else:
         return render_template('delete_category.html',
                                categories=GetAllCategories(),
-                               deletedCategory=deletedCategory)
+                               deletedCategory=deletedCategory,
+                               user=GetUserInfo(GetUserIDFromLoginSession()))
+
+
+# Product Routing Methods -----------------------------------------------------
 
 
 @app.route('/catalog/<int:category_id>/')
@@ -356,7 +448,8 @@ def productListing(category_id):
     return render_template('list_all_products.html',
                            categories=GetAllCategories(),
                            listCategory=listCategory,
-                           products=GetAllProducts(category_id))
+                           products=GetAllProducts(category_id),
+                           user=GetUserInfo(GetUserIDFromLoginSession()))
 
 
 @app.route('/catalog/<int:category_id>/<int:product_id>/view/')
@@ -371,7 +464,8 @@ def viewProduct(category_id, product_id):
     """
     return render_template('view_product.html',
                            categories=GetAllCategories(),
-                           singleproduct=GetSingleProduct(product_id))
+                           singleproduct=GetSingleProduct(product_id),
+                           user=GetUserInfo(GetUserIDFromLoginSession()))
 
 
 @app.route('/catalog/<int:category_id>/add/',
@@ -393,7 +487,8 @@ def addProduct(category_id):
             newProduct = Product(name=request.form['name'],
                                  description=request.form['description'],
                                  price=request.form['price'],
-                                 category_id=category_id)
+                                 category_id=category_id,
+                                 user_id=login_session['user_id'])
         session.add(newProduct)
         session.commit()
         return redirect(url_for('productListing',
@@ -401,7 +496,8 @@ def addProduct(category_id):
     else:
         return render_template('add_product.html',
                                categories=GetAllCategories(),
-                               category_id=category_id)
+                               category_id=category_id,
+                               user=GetUserInfo(GetUserIDFromLoginSession()))
 
 
 @app.route('/catalog/<int:category_id>/<int:product_id>/edit/',
@@ -433,7 +529,8 @@ def editProduct(category_id, product_id):
     else:
         return render_template('edit_product.html',
                                categories=GetAllCategories(),
-                               editedProduct=editedProduct)
+                               editedProduct=editedProduct,
+                               user=GetUserInfo(GetUserIDFromLoginSession()))
 
 
 @app.route('/catalog/<int:category_id>/<int:product_id>/delete/',
@@ -462,7 +559,11 @@ def deleteProduct(category_id, product_id):
         return render_template('delete_product.html',
                                categories=GetAllCategories(),
                                category_id=category_id,
-                               deletedProduct=deletedProduct)
+                               deletedProduct=deletedProduct,
+                               user=GetUserInfo(GetUserIDFromLoginSession()))
+
+
+# API Routing Methods ---------------------------------------------------------
 
 
 @app.route('/catalog/allcategories/json/')
@@ -485,6 +586,9 @@ def allProductsJSON():
     """
     products = GetAllProducts(0)
     return jsonify(Product=[product.serialize for product in products])
+
+
+# -----------------------------------------------------------------------------
 
 
 if __name__ == '__main__':
