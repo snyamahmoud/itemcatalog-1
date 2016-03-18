@@ -9,6 +9,8 @@
 <div class="white spacer"></div>
 
 <form action="{{ url_for('deleteProduct', category_id=deletedProduct.category.id, product_id=deletedProduct.id) }}" method='POST'>
+	<input name="csrf_token" type=hidden value="{{ csrf_token }}">
+
 	<div class="white spacer"></div>
 	<p>Are you sure you want to delete {{deletedProduct.name}} ?</p>
 	<div class="white spacer"></div>

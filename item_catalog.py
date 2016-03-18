@@ -327,6 +327,23 @@ def ConnectUser():
     return output
 
 
+# CSRF Helper Methods ---------------------------------------------------------
+
+
+def ValidateNonce():
+    """ Validate the CSRF token and abort if it's invalid. """
+    token = login_session.pop('csrf_token', None)
+    if not token or token != request.form.get('csrf_token'):
+        abort(403)
+
+
+def GenerateNonce():
+    """ Generate a CSRF token. """
+    if 'csrf_token' not in login_session:
+        login_session['csrf_token'] = '%030x' % random.randrange(16**30)
+    return login_session['csrf_token']
+
+
 # Login / Logout Routing Methods ----------------------------------------------
 
 
@@ -459,6 +476,8 @@ def addCategory():
         return redirect(url_for('userLogin'))
 
     if request.method == 'POST':
+        ValidateNonce()
+
         if request.form['name']:
             newCategory = Category(name=request.form['name'],
                                    user_id=login_session['user_id'])
@@ -469,7 +488,8 @@ def addCategory():
     else:
         return render_template('add_category.html',
                                categories=GetAllCategories(),
-                               user=GetUserInfo(GetUserIDFromLoginSession()))
+                               user=GetUserInfo(GetUserIDFromLoginSession()),
+                               csrf_token=GenerateNonce())
 
 
 @app.route('/catalog/<int:category_id>/edit/',
@@ -492,6 +512,8 @@ def editCategory(category_id):
         return redirect(url_for('userLogin'))
 
     if request.method == 'POST':
+        ValidateNonce()
+
         if request.form['name']:
             editedCategory.name = request.form['name']
         session.add(editedCategory)
@@ -502,7 +524,8 @@ def editCategory(category_id):
         return render_template('edit_category.html',
                                categories=GetAllCategories(),
                                editedCategory=editedCategory,
-                               user=GetUserInfo(GetUserIDFromLoginSession()))
+                               user=GetUserInfo(GetUserIDFromLoginSession()),
+                               csrf_token=GenerateNonce())
 
 
 @app.route('/catalog/<int:category_id>/delete/',
@@ -525,6 +548,8 @@ def deleteCategory(category_id):
         return redirect(url_for('userLogin'))
 
     if request.method == 'POST':
+        ValidateNonce()
+
         session.delete(deletedCategory)
         session.commit()
         return redirect(url_for('categoryListing'))
@@ -532,7 +557,8 @@ def deleteCategory(category_id):
         return render_template('delete_category.html',
                                categories=GetAllCategories(),
                                deletedCategory=deletedCategory,
-                               user=GetUserInfo(GetUserIDFromLoginSession()))
+                               user=GetUserInfo(GetUserIDFromLoginSession()),
+                               csrf_token=GenerateNonce())
 
 
 # Product Routing Methods -----------------------------------------------------
@@ -586,6 +612,8 @@ def addProduct(category_id):
         return redirect(url_for('userLogin'))
 
     if request.method == 'POST':
+        ValidateNonce()
+
         if request.form['name']:
             newProduct = Product(name=request.form['name'],
                                  description=request.form['description'],
@@ -600,7 +628,8 @@ def addProduct(category_id):
         return render_template('add_product.html',
                                categories=GetAllCategories(),
                                category_id=category_id,
-                               user=GetUserInfo(GetUserIDFromLoginSession()))
+                               user=GetUserInfo(GetUserIDFromLoginSession()),
+                               csrf_token=GenerateNonce())
 
 
 @app.route('/catalog/<int:category_id>/<int:product_id>/edit/',
@@ -624,6 +653,8 @@ def editProduct(category_id, product_id):
         return redirect(url_for('userLogin'))
 
     if request.method == 'POST':
+        ValidateNonce()
+
         if request.form['name']:
             editedProduct.name = request.form['name']
             editedProduct.description = request.form['description']
@@ -636,7 +667,8 @@ def editProduct(category_id, product_id):
         return render_template('edit_product.html',
                                categories=GetAllCategories(),
                                editedProduct=editedProduct,
-                               user=GetUserInfo(GetUserIDFromLoginSession()))
+                               user=GetUserInfo(GetUserIDFromLoginSession()),
+                               csrf_token=GenerateNonce())
 
 
 @app.route('/catalog/<int:category_id>/<int:product_id>/delete/',
@@ -660,6 +692,8 @@ def deleteProduct(category_id, product_id):
         return redirect(url_for('userLogin'))
 
     if request.method == 'POST':
+        ValidateNonce()
+
         session.delete(deletedProduct)
         session.commit()
         return redirect(url_for('productListing',
@@ -669,7 +703,8 @@ def deleteProduct(category_id, product_id):
                                categories=GetAllCategories(),
                                category_id=category_id,
                                deletedProduct=deletedProduct,
-                               user=GetUserInfo(GetUserIDFromLoginSession()))
+                               user=GetUserInfo(GetUserIDFromLoginSession()),
+                               csrf_token=GenerateNonce())
 
 
 # API Routing Methods ---------------------------------------------------------
