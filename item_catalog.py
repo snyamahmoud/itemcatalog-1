@@ -391,6 +391,9 @@ def editCategory(category_id):
 
     editedCategory = GetSingleCategory(category_id)
 
+    if login_session['user_id'] != editedCategory.user.id:
+        return redirect(url_for('userLogin'))
+
     if request.method == 'POST':
         if request.form['name']:
             editedCategory.name = request.form['name']
@@ -420,6 +423,9 @@ def deleteCategory(category_id):
         return redirect(url_for('userLogin'))
 
     deletedCategory = GetSingleCategory(category_id)
+
+    if login_session['user_id'] != deletedCategory.user.id:
+        return redirect(url_for('userLogin'))
 
     if request.method == 'POST':
         session.delete(deletedCategory)
@@ -517,6 +523,9 @@ def editProduct(category_id, product_id):
 
     editedProduct = GetSingleProduct(product_id)
 
+    if login_session['user_id'] != editedProduct.user.id:
+        return redirect(url_for('userLogin'))
+
     if request.method == 'POST':
         if request.form['name']:
             editedProduct.name = request.form['name']
@@ -549,6 +558,9 @@ def deleteProduct(category_id, product_id):
         return redirect(url_for('userLogin'))
 
     deletedProduct = GetSingleProduct(product_id)
+
+    if login_session['user_id'] != deletedProduct.user.id:
+        return redirect(url_for('userLogin'))
 
     if request.method == 'POST':
         session.delete(deletedProduct)
