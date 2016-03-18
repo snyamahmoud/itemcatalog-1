@@ -20,8 +20,14 @@ import requests
 app = Flask(__name__)
 
 
-CLIENT_ID = json.loads(
+GOOGLE_CLIENT_ID = json.loads(
     open('client_secrets.json', 'r').read())['web']['client_id']
+
+FACEBOOK_CLIENT_ID = json.loads(
+    open('facebook_client_secrets.json', 'r').read())['web']['app_id']
+
+FACEBOOK_CLIENT_SECRET = json.loads(
+    open('facebook_client_secrets.json', 'r').read())['web']['app_secret']
 
 
 engine = create_engine('sqlite:///itemcatalog.db')
@@ -161,29 +167,12 @@ def GetUserInfo(user_id):
     return user
 
 
-# Login / Logout Routing Methods ----------------------------------------------
+# Login Helper Methods --------------------------------------------------------
 
 
-@app.route('/login/')
-def userLogin():
-    """ Display the login page of the catalog.
+def ConnectUser():
+    """ Handles user login from any provider.
 
-    Returns:
-        The login page of the catalog.
-    """
-    # Generate an anti forgery state token.
-    state = ''.join(random.choice(string.ascii_uppercase + string.digits)
-                    for x in xrange(32))
-    # Add the state token to the current login session.
-    login_session['state'] = state
-    return render_template('login.html',
-                           google_client_id=CLIENT_ID,
-                           state_token=state)
-
-
-@app.route('/googleConnect', methods=['POST'])
-def googleConnect():
-    """ Verify that the user login credentials are valid.
      - verify the state token
      - exchange token for credentials
      - verify the credentials
@@ -191,6 +180,11 @@ def googleConnect():
      - store user data in local session
      - welcome the user
     """
+    if 'provider' not in login_session:
+        response = make_response(json.dumps('Provider not defined.'), 401)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+
     # Ensure that the state token from the client matches
     # the state token on the server.
     if request.args.get('state') != login_session['state']:
@@ -199,75 +193,118 @@ def googleConnect():
         response.headers['Content-Type'] = 'application/json'
         return response
 
-    # Obtain authorization code from the details the client submitted.
-    auth_code = request.data
+    if login_session['provider'] == 'google':
+        # Obtain authorization code from the details the client submitted.
+        auth_code = request.data
 
-    try:
-        # Exchange the authorization code for a credentials object.
-        oauth_flow = flow_from_clientsecrets('client_secrets.json', scope='')
-        oauth_flow.redirect_uri = 'postmessage'
-        credentials = oauth_flow.step2_exchange(auth_code)
-    except FlowExchangeError:
-        # Something went wrong in the exchange process,
-        # notify the user and exit.
-        response = make_response(
-            json.dumps('Failed to exchange the authorization code for a credentials object.'), 401)
-        response.headers['Content-Type'] = 'application/json'
-        return response
+        try:
+            # Exchange the authorization code for a credentials object.
+            oauth_flow = flow_from_clientsecrets(
+                'client_secrets.json', scope='')
+            oauth_flow.redirect_uri = 'postmessage'
+            credentials = oauth_flow.step2_exchange(auth_code)
+        except FlowExchangeError:
+            # Something went wrong in the exchange process,
+            # notify the user and exit.
+            response = make_response(
+                json.dumps('Failed to exchange the authorization code for a credentials object.'), 401)
+            response.headers['Content-Type'] = 'application/json'
+            return response
 
-    # Verify that the access token is valid.
-    access_token = credentials.access_token
-    url = ('https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=%s'
-           % access_token)
-    h = httplib2.Http()
-    result = json.loads(h.request(url, 'GET')[1])
+        # Verify that the access token is valid.
+        access_token = credentials.access_token
+        url = ('https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=%s'
+               % access_token)
+        h = httplib2.Http()
+        result = json.loads(h.request(url, 'GET')[1])
 
-    # If there was an error in the access token info, abort.
-    if result.get('error') is not None:
-        response = make_response(json.dumps(result.get('error')), 500)
-        response.headers['Content-Type'] = 'application/json'
-        return response
+        # If there was an error in the access token info, abort.
+        if result.get('error') is not None:
+            response = make_response(json.dumps(result.get('error')), 500)
+            response.headers['Content-Type'] = 'application/json'
+            return response
 
-    # Verify that the access token is used for the intended user.
-    gplus_id = credentials.id_token['sub']
-    if result['user_id'] != gplus_id:
-        response = make_response(
-            json.dumps("Token's user ID doesn't match given user ID."), 401)
-        response.headers['Content-Type'] = 'application/json'
-        return response
+        # Verify that the access token is used for the intended user.
+        gplus_id = credentials.id_token['sub']
+        if result['user_id'] != gplus_id:
+            response = make_response(
+                json.dumps("Token's user ID doesn't match given user ID."), 401)
+            response.headers['Content-Type'] = 'application/json'
+            return response
 
-    # Verify that the access token is valid for this app.
-    if result['issued_to'] != CLIENT_ID:
-        response = make_response(
-            json.dumps("Token's client ID does not match app's."), 401)
-        response.headers['Content-Type'] = 'application/json'
-        return response
+        # Verify that the access token is valid for this app.
+        if result['issued_to'] != GOOGLE_CLIENT_ID:
+            response = make_response(
+                json.dumps("Token's client ID does not match app's."), 401)
+            response.headers['Content-Type'] = 'application/json'
+            return response
 
-    # Verify the user is not already logged in.
-    stored_credentials = login_session.get('credentials')
-    stored_gplus_id = login_session.get('gplus_id')
-    if stored_credentials is not None and gplus_id == stored_gplus_id:
-        response = make_response(json.dumps('You are already logged in! Redirecting ...'),
-                                 200)
-        response.headers['Content-Type'] = 'application/json'
-        return response
+        # Verify the user is not already logged in.
+        stored_credentials = login_session.get('credentials')
+        stored_gplus_id = login_session.get('gplus_id')
+        if stored_credentials is not None and gplus_id == stored_gplus_id:
+            response = make_response(json.dumps('You are already logged in! Redirecting ...'),
+                                     200)
+            response.headers['Content-Type'] = 'application/json'
+            return response
 
-    # Store the access token and user creds in the session for later use.
-    login_session['credentials'] = credentials.access_token
-    login_session['gplus_id'] = gplus_id
+        # Store the access token and user creds in the session for later use.
+        login_session['credentials'] = credentials.access_token
+        login_session['gplus_id'] = gplus_id
 
-    # Use the Goolge Plus API to get more info about the user.
-    userinfo_url = "https://www.googleapis.com/oauth2/v1/userinfo"
-    params = {'access_token': credentials.access_token, 'alt': 'json'}
-    answer = requests.get(userinfo_url, params=params)
+        # Use the Goolge Plus API to get more info about the user.
+        userinfo_url = "https://www.googleapis.com/oauth2/v1/userinfo"
+        params = {'access_token': credentials.access_token, 'alt': 'json'}
+        answer = requests.get(userinfo_url, params=params)
 
-    # Save the user data to a json object.
-    data = answer.json()
+        # Save the user data to a json object.
+        data = answer.json()
 
-    # Store the user data in the login session.
-    login_session['username'] = data['name']
-    login_session['picture'] = data['picture']
-    login_session['email'] = data['email']
+        # Store the user data in the login session.
+        login_session['username'] = data['name']
+        login_session['picture'] = data['picture']
+        login_session['email'] = data['email']
+
+    elif login_session['provider'] == 'facebook':
+        # Exchange short-lived token for long-lived token.
+        access_token = request.data
+        url = 'https://graph.facebook.com/oauth/access_token?grant_type=fb_exchange_token&client_id=%s&client_secret=%s&fb_exchange_token=%s' % (
+            FACEBOOK_CLIENT_ID, FACEBOOK_CLIENT_SECRET, access_token)
+        h = httplib2.Http()
+        result = h.request(url, 'GET')[1]
+
+        # Strip expire tag from long-lived token.
+        token = result.split("&")[0]
+
+        # Use token to get user data from API.
+        url = 'https://graph.facebook.com/v2.4/me?%s&fields=name,id,email' % token
+        h = httplib2.Http()
+        result = h.request(url, 'GET')[1]
+
+        # Save the user data to a json object.
+        data = json.loads(result)
+
+        # Store the user data in the login session.
+        login_session['username'] = data["name"]
+        login_session['email'] = data["email"]
+        login_session['facebook_id'] = data["id"]
+
+        # The token must be stored in the login_session in
+        # order to properly logout. Strip out the information
+        # before the equals sign in the token.
+        stored_token = token.split("=")[1]
+        login_session['access_token'] = stored_token
+
+        # Get user picture.
+        url = 'https://graph.facebook.com/v2.4/me/picture?%s&redirect=0&height=200&width=200' % token
+        h = httplib2.Http()
+        result = h.request(url, 'GET')[1]
+
+        # Save the user picture to a json object.
+        data = json.loads(result)
+
+        # Store the user picture in the login session.
+        login_session['picture'] = data["data"]["url"]
 
     # Determine if the user exists, if it doesn't then create a new one.
     user_id = GetUserIDFromEmail(login_session['email'])
@@ -284,48 +321,103 @@ def googleConnect():
     output += '!</h3>'
     return output
 
+# Login / Logout Routing Methods ----------------------------------------------
+
+
+@app.route('/login/')
+def userLogin():
+    """ Display the login page of the catalog.
+
+    Returns:
+        The login page of the catalog.
+    """
+    # Generate an anti forgery state token.
+    state = ''.join(random.choice(string.ascii_uppercase + string.digits)
+                    for x in xrange(32))
+    # Add the state token to the current login session.
+    login_session['state'] = state
+    return render_template('login.html',
+                           google_client_id=GOOGLE_CLIENT_ID,
+                           facebook_client_id=FACEBOOK_CLIENT_ID,
+                           state_token=state)
+
+
+@app.route('/googleConnect', methods=['POST'])
+def googleConnect():
+    """ Login the user using Google credentials. """
+    login_session['provider'] = 'google'
+    return ConnectUser()
+
+
+@app.route('/facebookConnect', methods=['POST'])
+def facebookConnect():
+    """ Login the user using Facebook credentials. """
+    login_session['provider'] = 'facebook'
+    return ConnectUser()
+
 
 @app.route('/logout/')
 def userLogout():
-    """ Log the user out."""
-    access_token = None
+    """ Logout the user from the provider that they logged in with."""
+    if login_session['provider'] == 'google':
+        access_token = None
 
-    if login_session:
-        if 'credentials' in login_session:
-            access_token = login_session['credentials']
+        if login_session:
+            if 'credentials' in login_session:
+                access_token = login_session['credentials']
 
-    if access_token is None:
-        # No one is logged in, abort.
-        print 'Access Token is None'
-        response = make_response(json.dumps('Current user not connected.'), 401)
-        response.headers['Content-Type`'] = 'application/json'
-        return redirect(url_for('categoryListing'))
+        if access_token is None:
+            # No one is logged in, abort.
+            print 'Access Token is None'
+            response = make_response(json.dumps(
+                'Current user not connected.'), 401)
+            response.headers['Content-Type`'] = 'application/json'
+            return redirect(url_for('categoryListing'))
 
-    # Use Google API to revoke the token.
-    url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % access_token
-    h = httplib2.Http()
+        # Use Google API to revoke the token.
+        url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % access_token
+        h = httplib2.Http()
 
-    # Grab the result from Google.
-    result = h.request(url, 'GET')[0]
+        # Grab the result from Google.
+        result = h.request(url, 'GET')[0]
 
-    if result['status'] == '200':
-        # Success, user was logged out.
-        del login_session['credentials']
-        del login_session['gplus_id']
+        if result['status'] == '200':
+            # Success, user was logged out.
+            del login_session['credentials']
+            del login_session['gplus_id']
+            del login_session['username']
+            del login_session['email']
+            del login_session['picture']
+            print "success logout"
+            response = make_response(json.dumps(
+                'Successfully disconnected.'), 200)
+            response.headers['Content-Type'] = 'application/json'
+            return redirect(url_for('categoryListing'))
+        else:
+            # Something went wrong, notify the user.
+            print "FAIL logout"
+            response = make_response(json.dumps(
+                result, 400))
+            response.headers['Content-Type'] = 'application/json'
+            return response
+
+    elif login_session['provider'] == 'facebook':
+        facebook_id = login_session['facebook_id']
+        print facebook_id
+        url = 'https://graph.facebook.com/%s/permissions' % facebook_id
+        h = httplib2.Http()
+        result = h.request(url, 'DELETE')[1]
+
         del login_session['username']
         del login_session['email']
         del login_session['picture']
+        del login_session['user_id']
+        del login_session['facebook_id']
         print "success logout"
-        response = make_response(json.dumps('Successfully disconnected.'), 200)
+        response = make_response(json.dumps(
+            'Successfully disconnected.'), 200)
         response.headers['Content-Type'] = 'application/json'
         return redirect(url_for('categoryListing'))
-    else:
-        # Something went wrong, notify the user.
-        print "FAIL logout"
-        response = make_response(json.dumps(
-            result, 400))
-        response.headers['Content-Type'] = 'application/json'
-        return response
 
 
 # Category Routing Methods ----------------------------------------------------

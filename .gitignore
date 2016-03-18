@@ -22,3 +22,4 @@ database_schema.pyc
 *.bak
 client_secrets.json
 TODO.txt
+facebook_client_secrets.json

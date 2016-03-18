@@ -2,22 +2,36 @@
 
 {% block content %}
 
-<div id="signInButton">
-	<span class="g-signin" data-scope="openid email" data-clientid="{{google_client_id}}" data-redirecturi="postmessage" data-accesstype="offline" data-cookiepolicy="single_host_origin" data-callback="signInCallback" data-approvalprompt="force">
+<!-- Google Plus Login -->
+<div id="googleSignInButton">
+	<span class="g-signin" data-scope="openid email" data-clientid="{{google_client_id}}" data-redirecturi="postmessage" data-accesstype="offline" data-cookiepolicy="single_host_origin" data-callback="GoogleSignIn" data-approvalprompt="force">
 	</span>
 </div>
+
+<!-- Facebook Login -->
+<button id="facebookSignInButton">
+	<fb:login-button scope="public_profile,email" onlogin="FacebookSignIn();">
+		<a href='javascript:FacebookSignIn()'>Login with Facebook</a>
+	</fb:login-button>
+</button>
 
 <div id="result"></div>
 
 <script>
-	function signInCallback(authResult)
+    $('#user-name-label').attr('style', 'display: none');
+    $('#login-button').attr('style', 'display: none');
+    $('#logout-button').attr('style', 'display: none');
+
+	// Google Plus Login
+	function GoogleSignIn(authResult)
 	{
 		// This function is called if the user grants us access to their profile.
 
 		if (authResult['code']) // Auth via Google was successful.
 		{
-		    // Hide the sign-in button now that the user is authorized
-		    $('#signInButton').attr('style', 'display: none');
+		    // Hide the sign-in buttons now that the user is authorized
+		    $('#googleSignInButton').attr('style', 'display: none');
+		    $('#facebookSignInButton').attr('style', 'display: none');
 
 			// Send the one-time-use code to the server.
 			// If the server responds, write a 'login successful' message,
@@ -59,6 +73,79 @@
 				}
 			});
 		}
+	}
+
+	// Facebook Login
+
+	// Load the Facebook JavaScript SDK.
+	window.fbAsyncInit = function()
+	{
+		FB.init({
+			appId   : '{{facebook_client_id}}',
+			cookie  : true,  // enable cookies to allow server to access the session
+			xfbml   : true,  // parse social plugins on this page
+			version : 'v2.2' // use version 2.2
+		});
+	};
+
+	// Load the SDK asynchronously.
+	(function(d, s, id)
+	{
+		var js, fjs = d.getElementsByTagName(s)[0];
+		if (d.getElementById(id)) return;
+		js = d.createElement(s);
+		js.id = id;
+		js.src = "//connect.facebook.net/en_US/sdk.js";
+		fjs.parentNode.insertBefore(js, fjs);
+	}(document, 'script', 'facebook-jssdk'));
+
+	// Here we run a very simple test of the Graph API after login is
+	// successful.  See statusChangeCallback() for when this call is made.
+	function FacebookSignIn()
+	{
+		// Get a short-lived access token from Facebook.
+		var access_token = FB.getAuthResponse()['accessToken'];
+		console.log(access_token);
+		console.log('Welcome!  Fetching your information.... ');
+
+		FB.api('/me',
+			function(response)
+			{
+				console.log('Successful login for: ' + response.name);
+			    // Hide the sign-in buttons now that the user is authorized
+			    $('#googleSignInButton').attr('style', 'display: none');
+			    $('#facebookSignInButton').attr('style', 'display: none');
+
+				$.ajax({
+					type: 'POST',
+					url: '/facebookConnect?state={{state_token}}', // Call the method to validate the token.
+					processData: false, // Don't process into a string.
+					data: access_token, // Send the one time use code.
+					contentType: 'application/octet-stream; charset=utf-8',
+
+					success: function(result)
+					{
+						// Handle or verify the server response if necessary.
+						if (result)
+						{
+							// Notify the user that login was successful.
+							// Display a message on screen for 4 seconds,
+							// then redirect to the home page.
+							//$('#result').html('Login Successful!</br>'+ result + '</br>Redirecting...')
+							$('#result').html(result)
+							setTimeout(function()
+							{
+								window.location.href = "{{url_for('categoryListing')}}";
+							}, 4000);
+						}
+						else
+						{
+							$('#result').html('Failed to make a server-side call. Check your configuration and console.');
+						}
+					}
+				});
+			}
+		);
 	}
 </script>
 

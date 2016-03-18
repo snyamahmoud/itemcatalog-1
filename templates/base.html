@@ -32,19 +32,27 @@
 					<h1>Item Catalog</h1>
 				</div>
 				<div class="header-sub right">
-					<div class="spacer-button">
-						User: Guest
+					<div id="user-name-label"class="spacer-button">
+						{% if 'username' not in session %}
+							Guest
+						{% else %}
+							{{session.username}}
+						{% endif %}
 					</div>
-					<div class="spacer-button">
-						<div class="button purple login" onclick="location.href='{{ url_for('userLogin') }}';">
-							Login
+
+					{% if 'username' not in session %}
+						<div id="login-button" class="spacer-button">
+							<div class="button purple login" onclick="location.href='{{ url_for('userLogin') }}';">
+								Login
+							</div>
 						</div>
-					</div>
-					<div class="spacer-button">
-						<div class="button purple logout" onclick="location.href='{{ url_for('userLogout') }}';">
-							Logout
+					{% else %}
+						<div id="logout-button" class="spacer-button">
+							<div class="button purple logout" onclick="location.href='{{ url_for('userLogout') }}';">
+								Logout
+							</div>
 						</div>
-					</div>
+					{% endif %}
 				</div>
 			</div>
 		</div>
