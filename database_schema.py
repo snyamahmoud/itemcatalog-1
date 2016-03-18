@@ -19,6 +19,17 @@ from sqlalchemy import create_engine
 Base = declarative_base()
 
 
+class User(Base):
+    __tablename__ = 'user'
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String(250), nullable=False)
+    email = Column(String(250), nullable=False)
+    picture = Column(String(250))
+
+    unique_email = UniqueConstraint('email')
+
+
 class Category(Base):
     __tablename__ = 'category'
 
@@ -30,6 +41,9 @@ class Category(Base):
 
     # When a category is deleted, remove all products.
     products = relationship("Product", cascade="delete")
+
+    user_id = Column(Integer, ForeignKey('user.id'))
+    user = relationship(User)
 
     # Return the category object in a format for JSON.
     @property
@@ -52,6 +66,9 @@ class Product(Base):
 
     # Names need to be unique to a category to support vanity URLs.
     unique_product_name = UniqueConstraint('category_id', 'name')
+
+    user_id = Column(Integer, ForeignKey('user.id'))
+    user = relationship(User)
 
     # Return the product object in a format for JSON.
     @property
