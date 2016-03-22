@@ -9,19 +9,46 @@ The item catalog provides a listing of sports products. Users can login to the s
 ### Pre-requisites
 
 1. A virtual machine of your choice to host the database and the webserver. I used [VirtualBox](https://www.virtualbox.org/wiki/Downloads) and [Vagrant](https://www.vagrantup.com/downloads.html).
-2. SQLite to host the item catalog database. [Download SQLite here](https://www.sqlite.org/download.html).
-3. Python to run the database script and web server. [Download Python here](https://www.python.org/).
+2. [SQLite](https://www.sqlite.org/download.html) to host the item catalog database.
+3. [Python](https://www.python.org/) to run the database script and web server.
+4. A client ID and client secret from either [Google+](https://developers.google.com/) or [Facebook](https://developers.facebook.com/docs/apps/register).
 
 ### Getting Started
 
 1. Download the project files.
 
-2. Open the root directory and locate **database_test_script.py**. This is the script to create and populate database. Execute the script:
+2. Open the root directory and locate **database_test_script.py**. This is the script to create and populate the database. Execute the script:
 ```python
 python database_test_script.py
 ```
-3. In the root directory locate **item_catalog.py**. Launch the module to host the webserver:
+3. Now you'll need to save your client ID and client secret from your Google+ or Facebook account into the appropriate config file.
+
+#### Google+
+In the root directory locate **client_secrets_google.json**. Enter your client ID, client secret and project ID in the appropriate fields.
+```json
+{
+    "web":
+    {
+        "client_id":"YOUR_CLIENT_ID",
+        "client_secret":"YOUR_CLIENT_SECRET",
+
+        "project_id":"YOUR_PROJECT_ID",
+``` 
+
+### Facebook
+In the root directory locate **client_secrets_facebook.json**. Enter your client ID and client secret in the appropriate fields.
+```json
+{
+    "web":
+    {
+        "app_id": "YOUR_CLIENT_ID",
+        "app_secret": "YOUR_CLIENT_SECRET"
+    }
+}
+``` 
+
+4. In the root directory locate **item_catalog.py**. Launch the module to host the webserver:
 ```python
 python item_catalog.py
 ```
-4. Navigate to http://localhost:5000
+5. Navigate to http://localhost:5000

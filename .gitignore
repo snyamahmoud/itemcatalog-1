@@ -20,6 +20,6 @@ database_schema.pyc
 .hg/shelves/2016-03-05_14-50-50_parent_rev_10
 .hg/Trashcan/item_catalog_cyysql.py.bak
 *.bak
-client_secrets.json
 TODO.txt
-facebook_client_secrets.json
+client_secrets_facebook_mine.json
+client_secrets_google_mine.json

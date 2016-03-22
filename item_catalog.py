@@ -23,13 +23,13 @@ app = Flask(__name__)
 
 
 GOOGLE_CLIENT_ID = json.loads(
-    open('client_secrets.json', 'r').read())['web']['client_id']
+    open('client_secrets_google.json', 'r').read())['web']['client_id']
 
 FACEBOOK_CLIENT_ID = json.loads(
-    open('facebook_client_secrets.json', 'r').read())['web']['app_id']
+    open('client_secrets_facebook.json', 'r').read())['web']['app_id']
 
 FACEBOOK_CLIENT_SECRET = json.loads(
-    open('facebook_client_secrets.json', 'r').read())['web']['app_secret']
+    open('client_secrets_facebook.json', 'r').read())['web']['app_secret']
 
 
 engine = create_engine('sqlite:///itemcatalog.db')
