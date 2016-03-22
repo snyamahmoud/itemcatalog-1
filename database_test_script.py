@@ -92,12 +92,121 @@ AddProduct("Socks",
 
 
 category_id = AddCategory("Gym and Training", user_id)
+
+AddProduct("Ab Crunch Machine",
+           "Isolate ab muscles for a chiseled buff look.",
+           469.99,
+           category_id,
+           user_id)
+
+AddProduct("FTS 1000 - Foosball Table",
+           "Awesome Christmas gift!",
+           239.55,
+           category_id,
+           user_id)
+
+AddProduct("Youth Boxing Gloves",
+           "Yellow with black laces.",
+           69.00,
+           category_id,
+           user_id)
+
+AddProduct("Elliptical Cross Trainer",
+           "Large cycle motion with rear drive.",
+           1220.00,
+           category_id,
+           user_id)
+
 category_id = AddCategory("Tennis", user_id)
+
+AddProduct("Wilson Burn 95",
+           "Headsize: 95in. String Pattern: 16x19. Swingweight: 335 (RDC). Length: 27.25",
+           229.00,
+           category_id,
+           user_id)
+
+AddProduct("Men's Tennis Hat Blue",
+           "Blue mesh polyester, one size fits all.",
+           20.00,
+           category_id,
+           user_id)
+
+
 category_id = AddCategory("Football", user_id)
+
+AddProduct("Mens Football Cleats",
+           "",
+           152.85,
+           category_id,
+           user_id)
+
+AddProduct("Fleece Pullover",
+           "Lightweight training hoodie.",
+           95,
+           category_id,
+           user_id)
+
+
 category_id = AddCategory("Baseball", user_id)
+
 category_id = AddCategory("Soccer", user_id)
+
+AddProduct("Padded Reversible Warmup Jacket",
+           "Available in blue/black, red/brown.",
+           145,
+           category_id,
+           user_id)
+
+AddProduct("Men's Football Socks",
+           "Available in M and L, various colours.",
+           15.99,
+           category_id,
+           user_id)
+
+
 category_id = AddCategory("Basketball", user_id)
+
+AddProduct("Jordan Mini Ball (Size 3)",
+           "Red and black.",
+           14,
+           category_id,
+           user_id)
+
+AddProduct("Men's Basketball Shorts",
+           "",
+           55.95,
+           category_id,
+           user_id)
+
+
 category_id = AddCategory("Hockey", user_id)
+
+AddProduct("CCM JetSpeed",
+           "Senior, Junior and Youth",
+           695.50,
+           category_id,
+           user_id)
+
+AddProduct("Bauer Street Hockey stick (wood)",
+           "",
+           27.99,
+           category_id,
+           user_id)
+
+
 category_id = AddCategory("Yoga", user_id)
+
+AddProduct("Soft Dri Grip Mat (5mm)",
+           "Superior wicking to prevent slipping.",
+           74.98,
+           category_id,
+           user_id)
+
+AddProduct("Grippy Yoga Mat Towel",
+           "Absorbent microfibre top layer.",
+           34.98,
+           category_id,
+           user_id)
+
 
 print "database populated."
