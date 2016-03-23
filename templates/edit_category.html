@@ -12,7 +12,7 @@
 	<input name="csrf_token" type=hidden value="{{ csrf_token }}">
 
 	<p>Name:</p>
-	<input type='text' size='30' name='name' placeholder="{{editedCategory.name}}">
+	<input type='text' size='30' name='name' value="{{editedCategory.name}}">
 	<div class="white spacer"></div>
 	<input class="green mini float-left" type='submit' value='Save'>
 	<div class="button-cancel mini float-left" onclick="location.href='{{url_for('categoryListing')}}';">Cancel</div>

@@ -12,22 +12,22 @@
 	<input name="csrf_token" type=hidden value="{{ csrf_token }}">
 
 	<p>Name:</p>
-	<input type='text' size='30' name='name' placeholder="{{editedProduct.name}}">
+	<input type='text' size='30' name='name' value="{{editedProduct.name}}">
 	<br>
 	<div class="white spacer"></div>
 
 	<p>Description:</p>
-	<input type='text' size='30' name='description' placeholder="{{editedProduct.description}}">
+	<input type='text' size='30' name='description' value="{{editedProduct.description}}">
 	<br>
 	<div class="white spacer"></div>
 
 	<p>Price:</p>
-	<input type='text' size='30' name='price' placeholder="{{editedProduct.price}}">
+	<input type='text' size='30' name='price' value="{{editedProduct.price}}">
 	<br>
 	<div class="white spacer"></div>
 
 	<p>Category:</p>
-	<input type='text' size='30' name='category' placeholder="{{editedProduct.category.name}}">
+	<input type='text' size='30' name='category' value="{{editedProduct.category.name}}">
 	<br>
 	<div class="white spacer"></div>
 
