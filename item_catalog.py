@@ -205,7 +205,7 @@ def ConnectUser():
         try:
             # Exchange the authorization code for a credentials object.
             oauth_flow = flow_from_clientsecrets(
-                'client_secrets.json', scope='')
+                'client_secrets_google.json', scope='')
             oauth_flow.redirect_uri = 'postmessage'
             credentials = oauth_flow.step2_exchange(auth_code)
         except FlowExchangeError:
