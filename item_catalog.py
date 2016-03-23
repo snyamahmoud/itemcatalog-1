@@ -1,7 +1,8 @@
 from flask import Flask, render_template, url_for, request, redirect, jsonify
 from flask import session as login_session
 from flask import make_response
-from flask import abort
+from flask import abort, g
+from functools import wraps
 
 from xml.etree.ElementTree import Element, SubElement, Comment, tostring
 
@@ -174,6 +175,15 @@ def GetUserInfo(user_id):
 
 
 # Login Helper Methods --------------------------------------------------------
+
+
+def LoginRequired(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'username' not in login_session:
+            return redirect(url_for('userLogin', next=request.url))
+        return f(*args, **kwargs)
+    return decorated_function
 
 
 def ConnectUser():
@@ -466,6 +476,7 @@ def categoryListing():
 
 @app.route('/catalog/add/',
            methods=['GET', 'POST'])
+@LoginRequired
 def addCategory():
     """ Add a category to the catalog. Supports GET and POST.
 
@@ -473,9 +484,6 @@ def addCategory():
         GET: the New Category form.
         POST: the product listing for the new category.
     """
-    if 'username' not in login_session:
-        return redirect(url_for('userLogin'))
-
     if request.method == 'POST':
         ValidateNonce()
 
@@ -495,6 +503,7 @@ def addCategory():
 
 @app.route('/catalog/<int:category_id>/edit/',
            methods=['GET', 'POST'])
+@LoginRequired
 def editCategory(category_id):
     """ Edit a category. Supports GET and POST.
 
@@ -504,9 +513,6 @@ def editCategory(category_id):
         GET: the Edit Category form.
         POST: the product listing for the edited category.
     """
-    if 'username' not in login_session:
-        return redirect(url_for('userLogin'))
-
     editedCategory = GetSingleCategory(category_id)
 
     if login_session['user_id'] != editedCategory.user.id:
@@ -531,6 +537,7 @@ def editCategory(category_id):
 
 @app.route('/catalog/<int:category_id>/delete/',
            methods=['GET', 'POST'])
+@LoginRequired
 def deleteCategory(category_id):
     """ Delete a category. Supports GET and POST.
 
@@ -540,9 +547,6 @@ def deleteCategory(category_id):
         GET: the Delete Category form.
         POST: the home page of the catalog.
     """
-    if 'username' not in login_session:
-        return redirect(url_for('userLogin'))
-
     deletedCategory = GetSingleCategory(category_id)
 
     if login_session['user_id'] != deletedCategory.user.id:
@@ -600,6 +604,7 @@ def viewProduct(category_id, product_id):
 
 @app.route('/catalog/<int:category_id>/add/',
            methods=['GET', 'POST'])
+@LoginRequired
 def addProduct(category_id):
     """ Add a product to the selected category.
 
@@ -609,9 +614,6 @@ def addProduct(category_id):
         GET: the New Product form.
         POST: the product listing for the selected category.
     """
-    if 'username' not in login_session:
-        return redirect(url_for('userLogin'))
-
     if request.method == 'POST':
         ValidateNonce()
 
@@ -635,6 +637,7 @@ def addProduct(category_id):
 
 @app.route('/catalog/<int:category_id>/<int:product_id>/edit/',
            methods=['GET', 'POST'])
+@LoginRequired
 def editProduct(category_id, product_id):
     """ Edit a product.
 
@@ -645,9 +648,6 @@ def editProduct(category_id, product_id):
         GET: the Edit Product form.
         POST: the product listing for the selected category.
     """
-    if 'username' not in login_session:
-        return redirect(url_for('userLogin'))
-
     editedProduct = GetSingleProduct(product_id)
 
     if login_session['user_id'] != editedProduct.user.id:
@@ -674,6 +674,7 @@ def editProduct(category_id, product_id):
 
 @app.route('/catalog/<int:category_id>/<int:product_id>/delete/',
            methods=['GET', 'POST'])
+@LoginRequired
 def deleteProduct(category_id, product_id):
     """ Delete a product.
 
@@ -684,9 +685,6 @@ def deleteProduct(category_id, product_id):
         GET: the Delete Product form.
         POST: the product listing for the selected category.
     """
-    if 'username' not in login_session:
-        return redirect(url_for('userLogin'))
-
     deletedProduct = GetSingleProduct(product_id)
 
     if login_session['user_id'] != deletedProduct.user.id:
